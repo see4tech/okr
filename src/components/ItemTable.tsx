@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { formatDate, itemStatusLabel, ui } from '@/lib/i18n'
 import type { ItemWithCounts } from '@/types/db'
 
@@ -11,6 +11,8 @@ export function ItemTable({
   openBlockersCount: Record<string, number>
   openHelpCount: Record<string, number>
 }) {
+  const navigate = useNavigate()
+
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200">
       <table className="min-w-full divide-y divide-gray-200">
@@ -28,8 +30,12 @@ export function ItemTable({
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {items.map((item) => (
-            <tr key={item.id} className="hover:bg-gray-50">
-              <td className="px-4 py-2">
+            <tr
+              key={item.id}
+              onClick={() => navigate(`/item/${item.id}`)}
+              className="hover:bg-gray-50 cursor-pointer"
+            >
+              <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
                 <Link to={`/item/${item.id}`} className="text-blue-600 hover:underline font-medium">
                   {item.title}
                 </Link>

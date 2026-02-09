@@ -8,14 +8,14 @@ import { BlockersPanel } from '@/components/BlockersPanel'
 import { HelpRequestsPanel } from '@/components/HelpRequestsPanel'
 import { UpdatesTimeline } from '@/components/UpdatesTimeline'
 import { CommentsPanel } from '@/components/CommentsPanel'
-import { ui, itemStatusLabel } from '@/lib/i18n'
+import { ui, itemStatusLabel, formatDateTime } from '@/lib/i18n'
 import type { Item } from '@/types/db'
 import type { Blocker } from '@/types/db'
 import type { HelpRequest } from '@/types/db'
 import type { Comment } from '@/types/db'
 import type { ItemUpdateWithAuthor } from '@/types/db'
 
-type TabId = 'form' | 'blockers' | 'help' | 'comments' | 'timeline'
+type TabId = 'form' | 'blockers' | 'help' | 'comments' | 'timeline' | 'activity'
 
 export function ItemDetail() {
   const { id } = useParams<{ id: string }>()
@@ -208,6 +208,7 @@ export function ItemDetail() {
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'form', label: ui.edit },
+    { id: 'activity', label: ui.activity },
     { id: 'blockers', label: ui.blockers },
     { id: 'help', label: ui.helpRequests },
     { id: 'comments', label: ui.comments },
@@ -256,6 +257,13 @@ export function ItemDetail() {
             disabled={!canEdit}
           />
         )}
+        {tab === 'activity' && (
+          <ActivityList
+            comments={comments}
+            updates={updates}
+            itemStatusLabel={itemStatusLabel}
+          />
+        )}
         {tab === 'blockers' && (
           <BlockersPanel itemId={item.id} blockers={blockers} canEdit={canEdit || isMember} />
         )}
@@ -278,6 +286,84 @@ export function ItemDetail() {
         {tab === 'timeline' && <UpdatesTimeline updates={updates} />}
       </div>
     </Layout>
+  )
+}
+
+type CommentWithEmail = Comment & { author_email?: string | null }
+
+function ActivityList({
+  comments,
+  updates,
+  itemStatusLabel: statusLabel,
+}: {
+  comments: CommentWithEmail[]
+  updates: ItemUpdateWithAuthor[]
+  itemStatusLabel: (key: string) => string
+}) {
+  type ActivityEntry =
+    | { type: 'comment'; id: string; at: string; author: string; body: string }
+    | { type: 'update'; id: string; at: string; author: string; snapshot: Record<string, unknown> }
+  const entries: ActivityEntry[] = [
+    ...comments.map((c) => ({
+      type: 'comment' as const,
+      id: c.id,
+      at: c.created_at,
+      author: c.author_email ?? ui.unknown,
+      body: c.body,
+    })),
+    ...updates.map((u) => ({
+      type: 'update' as const,
+      id: u.id,
+      at: u.created_at,
+      author: (u as ItemUpdateWithAuthor).author_email ?? ui.unknown,
+      snapshot: (u.snapshot as Record<string, unknown>) ?? {},
+    })),
+  ].sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime())
+
+  if (entries.length === 0) {
+    return (
+      <p className="text-sm text-gray-500">
+        {ui.noComments}
+        <br />
+        {ui.noUpdatesYet}
+      </p>
+    )
+  }
+
+  return (
+    <ul className="space-y-3 list-none pl-0">
+      {entries.map((e) => (
+        <li key={`${e.type}-${e.id}`} className="border-l-2 border-gray-200 pl-4 py-2">
+          <p className="text-xs text-gray-500">
+            {e.type === 'comment' ? ui.activityComment : ui.activityUpdate} · {e.author} · {formatDateTime(e.at)}
+          </p>
+          {e.type === 'comment' ? (
+            <p className="mt-1 text-sm text-gray-800">{e.body}</p>
+          ) : (
+            <ul className="mt-1 text-sm text-gray-700 space-y-0.5 list-disc list-inside">
+              {'status' in e.snapshot && e.snapshot.status && (
+                <li>{ui.status}: {statusLabel(String(e.snapshot.status))}</li>
+              )}
+              {'next_step' in e.snapshot && e.snapshot.next_step && (
+                <li>{ui.nextStep}: {String(e.snapshot.next_step)}</li>
+              )}
+              {'target_date' in e.snapshot && e.snapshot.target_date && (
+                <li>{ui.targetDate}: {String(e.snapshot.target_date)}</li>
+              )}
+              {'status_reason' in e.snapshot && e.snapshot.status_reason && (
+                <li>{ui.statusReason}: {String(e.snapshot.status_reason)}</li>
+              )}
+              {'blockers_summary' in e.snapshot && e.snapshot.blockers_summary && (
+                <li>{ui.blockersSummary}: {String(e.snapshot.blockers_summary)}</li>
+              )}
+              {'help_needed_summary' in e.snapshot && e.snapshot.help_needed_summary && (
+                <li>{ui.helpNeededSummary}: {String(e.snapshot.help_needed_summary)}</li>
+              )}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
   )
 }
 

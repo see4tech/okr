@@ -60,27 +60,23 @@ export function TeamBoard() {
     },
   })
 
-  const effectiveTeamId = selectedTeamId || (teams[0] as Team | undefined)?.id
-
   const { data: objectives = [] } = useQuery({
-    queryKey: ['objectives', effectiveTeamId],
+    queryKey: ['objectives', 'board', selectedTeamId],
     queryFn: async () => {
-      if (!effectiveTeamId) return []
-      const { data, error } = await supabase
-        .from('objectives')
-        .select('id, title')
-        .eq('team_id', effectiveTeamId)
+      let q = supabase.from('objectives').select('id, title, team_id')
+      if (selectedTeamId) q = q.eq('team_id', selectedTeamId)
+      const { data, error } = await q.order('title')
       if (error) throw error
-      return data as { id: string; title: string }[]
+      return (data ?? []) as { id: string; title: string; team_id: string }[]
     },
-    enabled: !!effectiveTeamId,
+    enabled: true,
   })
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: [
       'items',
       'board',
-      effectiveTeamId,
+      selectedTeamId,
       statusFilter,
       ownerFilter,
       targetFrom,
@@ -88,10 +84,8 @@ export function TeamBoard() {
       objectiveFilter,
     ],
     queryFn: async () => {
-      let q = supabase
-        .from('items')
-        .select('*')
-        .eq('team_id', effectiveTeamId!)
+      let q = supabase.from('items').select('*')
+      if (selectedTeamId) q = q.eq('team_id', selectedTeamId)
       if (statusFilter) q = q.eq('status', statusFilter)
       if (ownerFilter) q = q.eq('owner_id', ownerFilter)
       if (targetFrom) q = q.gte('target_date', targetFrom)
@@ -110,7 +104,7 @@ export function TeamBoard() {
       }
       return list
     },
-    enabled: !!effectiveTeamId,
+    enabled: true,
   })
 
   const itemIds = useMemo(() => items.map((i) => i.id), [items])
@@ -240,7 +234,7 @@ export function TeamBoard() {
         </div>
         <div className="mb-2 flex justify-end">
           <a
-            href={effectiveTeamId ? `/item/new?team=${effectiveTeamId}` : '/item/new'}
+            href={selectedTeamId ? `/item/new?team=${selectedTeamId}` : '/item/new'}
             className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700"
           >
             {ui.createItem}
