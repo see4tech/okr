@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
+import { ui, helpRequestTypeLabel, helpRequestStatusLabel } from '@/lib/i18n'
 import { HELP_REQUEST_TYPES, HELP_REQUEST_STATUSES } from '@/types/enums'
 import type { HelpRequest } from '@/types/db'
 
@@ -82,14 +83,14 @@ export function HelpRequestsPanel({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-900">Help requests</h3>
+        <h3 className="font-medium text-gray-900">{ui.helpRequests}</h3>
         {canEdit && (
           <button
             type="button"
             onClick={() => setShowForm((v) => !v)}
             className="text-sm text-blue-600 hover:underline"
           >
-            {showForm ? 'Cancel' : 'Add request'}
+            {showForm ? ui.cancel : ui.addRequest}
           </button>
         )}
       </div>
@@ -107,8 +108,8 @@ export function HelpRequestsPanel({
             className="rounded border border-gray-200 p-3 bg-gray-50 text-sm"
           >
             <div className="flex justify-between items-start">
-              <span className="font-medium text-gray-900">{hr.type}</span>
-              <span className="text-gray-500 text-xs">{hr.status}</span>
+              <span className="font-medium text-gray-900">{helpRequestTypeLabel(hr.type)}</span>
+              <span className="text-gray-500 text-xs">{helpRequestStatusLabel(hr.status)}</span>
             </div>
             {hr.detail && <p className="mt-1 text-gray-600">{hr.detail}</p>}
             {canEdit && (
@@ -122,7 +123,7 @@ export function HelpRequestsPanel({
                 >
                   {HELP_REQUEST_STATUSES.map((s) => (
                     <option key={s} value={s}>
-                      {s}
+                      {helpRequestStatusLabel(s)}
                     </option>
                   ))}
                 </select>
@@ -131,7 +132,7 @@ export function HelpRequestsPanel({
                   onClick={() => deleteMutation.mutate(hr.id)}
                   className="text-xs text-red-600 hover:underline"
                 >
-                  Delete
+                  {ui.delete}
                 </button>
               </div>
             )}
@@ -139,7 +140,7 @@ export function HelpRequestsPanel({
         ))}
       </ul>
       {helpRequests.length === 0 && !showForm && (
-        <p className="text-sm text-gray-500">No help requests.</p>
+        <p className="text-sm text-gray-500">{ui.noHelpRequests}</p>
       )}
     </div>
   )
@@ -172,14 +173,14 @@ function HelpRequestForm({
       >
         {HELP_REQUEST_TYPES.map((t) => (
           <option key={t} value={t}>
-            {t}
+            {helpRequestTypeLabel(t)}
           </option>
         ))}
       </select>
       <textarea
         value={detail}
         onChange={(e) => setDetail(e.target.value)}
-        placeholder="Detail"
+        placeholder={ui.detail}
         rows={2}
         className="block w-full rounded border border-gray-300 py-1 px-2 text-sm"
       />
@@ -189,10 +190,10 @@ function HelpRequestForm({
           disabled={isSubmitting}
           className="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
         >
-          Add
+          {ui.add}
         </button>
         <button type="button" onClick={onCancel} className="text-sm text-gray-600 hover:underline">
-          Cancel
+          {ui.cancel}
         </button>
       </div>
     </form>

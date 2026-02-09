@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { signOut } from '@/lib/auth'
+import { ui } from '@/lib/i18n'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
@@ -15,16 +16,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <nav className="flex items-center gap-6">
           <Link to="/" className="font-semibold text-gray-900">
-            OKR Ops Tracker
+            {ui.appName}
           </Link>
           <Link to="/" className="text-gray-600 hover:text-gray-900 text-sm">
-            Home
+            {ui.home}
           </Link>
           <Link to="/board" className="text-gray-600 hover:text-gray-900 text-sm">
-            Team Board
+            {ui.teamBoard}
           </Link>
           <Link to="/director" className="text-gray-600 hover:text-gray-900 text-sm">
-            Director
+            {ui.director}
           </Link>
         </nav>
         <button
@@ -32,7 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           onClick={handleSignOut}
           className="text-sm text-gray-600 hover:text-gray-900"
         >
-          Sign out
+          {ui.signOut}
         </button>
       </header>
       <main className="flex-1 p-4 md:p-6">{children}</main>

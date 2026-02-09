@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { ui, itemStatusLabel } from '@/lib/i18n'
 import { ITEM_STATUSES } from '@/types/enums'
 import type { Item } from '@/types/db'
 
@@ -41,14 +42,14 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.status}</label>
         <select
           {...register('status')}
           className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
         >
           {ITEM_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {itemStatusLabel(s)}
             </option>
           ))}
         </select>
@@ -57,7 +58,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Status reason</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.statusReason}</label>
         <textarea
           {...register('status_reason')}
           rows={2}
@@ -65,7 +66,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Blockers summary</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.blockersSummary}</label>
         <textarea
           {...register('blockers_summary')}
           rows={2}
@@ -73,7 +74,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Help needed summary</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.helpNeededSummary}</label>
         <textarea
           {...register('help_needed_summary')}
           rows={2}
@@ -81,7 +82,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Next step</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.nextStep}</label>
         <input
           type="text"
           {...register('next_step')}
@@ -89,7 +90,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Target date</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.targetDate}</label>
         <input
           type="date"
           {...register('target_date')}
@@ -101,7 +102,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         disabled={disabled || isSubmitting}
         className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
       >
-        {isSubmitting ? 'Saving…' : 'Save update'}
+        {isSubmitting ? ui.saving : ui.saveUpdate}
       </button>
     </form>
   )

@@ -1,14 +1,6 @@
 import { Link } from 'react-router-dom'
+import { formatDate, itemStatusLabel, ui } from '@/lib/i18n'
 import type { ItemWithCounts } from '@/types/db'
-
-function formatDate(s: string | null) {
-  if (!s) return '—'
-  return new Date(s).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 export function ItemTable({
   items,
@@ -24,14 +16,14 @@ export function ItemTable({
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Blockers</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Help</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Next step</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Target date</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Last update</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.title}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.status}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.owner}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.blockers}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.help}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.nextStep}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.targetDate}</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{ui.lastUpdate}</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -42,7 +34,7 @@ export function ItemTable({
                   {item.title}
                 </Link>
               </td>
-              <td className="px-4 py-2 text-sm text-gray-700">{item.status}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{itemStatusLabel(item.status)}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{item.owner_email ?? '—'}</td>
               <td className="px-4 py-2 text-sm">{openBlockersCount[item.id] ?? 0}</td>
               <td className="px-4 py-2 text-sm">{openHelpCount[item.id] ?? 0}</td>

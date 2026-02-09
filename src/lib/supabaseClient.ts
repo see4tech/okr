@@ -5,7 +5,7 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!url || !anonKey) {
   throw new Error(
-    'Missing Supabase env: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify (Site configuration → Environment variables), then redeploy.'
+    'Faltan variables de Supabase: configura VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en Netlify (Configuración del sitio → Variables de entorno) y vuelve a desplegar.'
   )
 }
 

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
 import { TeamSelector } from '@/components/TeamSelector'
+import { ui, itemStatusLabel, blockerSeverityLabel, helpRequestTypeLabel } from '@/lib/i18n'
 import { ITEM_STATUSES } from '@/types/enums'
 import type { Team } from '@/types/db'
 import type { Item } from '@/types/db'
@@ -83,7 +84,7 @@ export function DirectorDashboard() {
   const itemToTeamName = useMemo(() => {
     const m = new Map<string, string>()
     for (const i of items) {
-      const name = (i as Item & { teams?: { name: string } }).teams?.name ?? 'Unknown'
+      const name = (i as Item & { teams?: { name: string } }).teams?.name ?? ui.unknown
       m.set(i.id, name)
     }
     return m
@@ -105,7 +106,7 @@ export function DirectorDashboard() {
   const openBlockersByTeam = useMemo(() => {
     const m: Record<string, number> = {}
     for (const b of blockers) {
-      const name = itemToTeamName.get(b.item_id) ?? 'Unknown'
+      const name = itemToTeamName.get(b.item_id) ?? ui.unknown
       m[name] = (m[name] ?? 0) + 1
     }
     return m
@@ -122,7 +123,7 @@ export function DirectorDashboard() {
   const openHelpByTeam = useMemo(() => {
     const m: Record<string, number> = {}
     for (const h of helpRequests) {
-      const name = itemToTeamName.get(h.item_id) ?? 'Unknown'
+      const name = itemToTeamName.get(h.item_id) ?? ui.unknown
       m[name] = (m[name] ?? 0) + 1
     }
     return m
@@ -154,7 +155,7 @@ export function DirectorDashboard() {
   if (profileLoading) {
     return (
       <Layout>
-        <p className="text-gray-500">Loading…</p>
+        <p className="text-gray-500">{ui.loading}</p>
       </Layout>
     )
   }
@@ -162,7 +163,7 @@ export function DirectorDashboard() {
   if (!isAdmin) {
     return (
       <Layout>
-        <p className="text-red-600">Access denied. Director dashboard is for admins only.</p>
+        <p className="text-red-600">{ui.accessDeniedDirector}</p>
       </Layout>
     )
   }
@@ -170,7 +171,7 @@ export function DirectorDashboard() {
   return (
     <Layout>
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Director Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 mb-4">{ui.directorDashboard}</h1>
         <div className="mb-6 flex flex-wrap gap-4 items-end">
           <TeamSelector
             teams={teams}
@@ -178,16 +179,16 @@ export function DirectorDashboard() {
             onSelect={(id) => setTeamFilter(id || null)}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.status}</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="rounded-md border border-gray-300 py-2 px-3 text-sm"
             >
-              <option value="">All</option>
+              <option value="">{ui.all}</option>
               {ITEM_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {itemStatusLabel(s)}
                 </option>
               ))}
             </select>
@@ -195,12 +196,12 @@ export function DirectorDashboard() {
         </div>
 
         {itemsLoading ? (
-          <p className="text-gray-500">Loading…</p>
+          <p className="text-gray-500">{ui.loading}</p>
         ) : (
           <div className="space-y-8">
-            <Section title="Items paused or at risk">
+            <Section title={ui.itemsPausedOrAtRisk}>
               {pausedOrAtRisk.length === 0 ? (
-                <p className="text-sm text-gray-500">None.</p>
+                <p className="text-sm text-gray-500">{ui.none}</p>
               ) : (
                 <ul className="space-y-1">
                   {pausedOrAtRisk.map((i) => (
@@ -208,24 +209,24 @@ export function DirectorDashboard() {
                       <Link to={`/item/${i.id}`} className="text-blue-600 hover:underline">
                         {(i as Item & { teams?: { name: string } }).teams?.name}: {i.title}
                       </Link>
-                      <span className="text-gray-500 text-sm ml-2">({i.status})</span>
+                      <span className="text-gray-500 text-sm ml-2">({itemStatusLabel(i.status)})</span>
                     </li>
                   ))}
                 </ul>
               )}
             </Section>
 
-            <Section title="Open blockers by severity">
+            <Section title={ui.openBlockersBySeverity}>
               <ul className="flex flex-wrap gap-4">
                 {['critical', 'high', 'medium', 'low'].map((sev) => (
                   <li key={sev} className="rounded bg-gray-100 px-3 py-1 text-sm">
-                    {sev}: {openBlockersBySeverity[sev] ?? 0}
+                    {blockerSeverityLabel(sev)}: {openBlockersBySeverity[sev] ?? 0}
                   </li>
                 ))}
               </ul>
             </Section>
 
-            <Section title="Open blockers by team">
+            <Section title={ui.openBlockersByTeam}>
               <ul className="flex flex-wrap gap-4">
                 {Object.entries(openBlockersByTeam).map(([name, count]) => (
                   <li key={name} className="rounded bg-gray-100 px-3 py-1 text-sm">
@@ -233,25 +234,25 @@ export function DirectorDashboard() {
                   </li>
                 ))}
                 {Object.keys(openBlockersByTeam).length === 0 && (
-                  <li className="text-sm text-gray-500">None.</li>
+                  <li className="text-sm text-gray-500">{ui.none}</li>
                 )}
               </ul>
             </Section>
 
-            <Section title="Open help requests by type">
+            <Section title={ui.openHelpByType}>
               <ul className="flex flex-wrap gap-4">
                 {Object.entries(openHelpByType).map(([type, count]) => (
                   <li key={type} className="rounded bg-gray-100 px-3 py-1 text-sm">
-                    {type}: {count}
+                    {helpRequestTypeLabel(type)}: {count}
                   </li>
                 ))}
                 {Object.keys(openHelpByType).length === 0 && (
-                  <li className="text-sm text-gray-500">None.</li>
+                  <li className="text-sm text-gray-500">{ui.none}</li>
                 )}
               </ul>
             </Section>
 
-            <Section title="Open help requests by team">
+            <Section title={ui.openHelpByTeam}>
               <ul className="flex flex-wrap gap-4">
                 {Object.entries(openHelpByTeam).map(([name, count]) => (
                   <li key={name} className="rounded bg-gray-100 px-3 py-1 text-sm">
@@ -259,15 +260,15 @@ export function DirectorDashboard() {
                   </li>
                 ))}
                 {Object.keys(openHelpByTeam).length === 0 && (
-                  <li className="text-sm text-gray-500">None.</li>
+                  <li className="text-sm text-gray-500">{ui.none}</li>
                 )}
               </ul>
             </Section>
 
-            <Section title="Upcoming target dates (30 / 60 / 90 days)">
+            <Section title={ui.upcomingTargets}>
               <div className="grid gap-4 md:grid-cols-3">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Next 30 days</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-1">{ui.next30Days}</h4>
                   <ul className="space-y-1 text-sm">
                     {targets30.map((i) => (
                       <li key={i.id}>
@@ -277,11 +278,11 @@ export function DirectorDashboard() {
                         <span className="text-gray-500 ml-1">{i.target_date}</span>
                       </li>
                     ))}
-                    {targets30.length === 0 && <li className="text-gray-500">None.</li>}
+                    {targets30.length === 0 && <li className="text-gray-500">{ui.none}</li>}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">31–60 days</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-1">{ui.days31to60}</h4>
                   <ul className="space-y-1 text-sm">
                     {targets60.map((i) => (
                       <li key={i.id}>
@@ -291,11 +292,11 @@ export function DirectorDashboard() {
                         <span className="text-gray-500 ml-1">{i.target_date}</span>
                       </li>
                     ))}
-                    {targets60.length === 0 && <li className="text-gray-500">None.</li>}
+                    {targets60.length === 0 && <li className="text-gray-500">{ui.none}</li>}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">61–90 days</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-1">{ui.days61to90}</h4>
                   <ul className="space-y-1 text-sm">
                     {targets90.map((i) => (
                       <li key={i.id}>
@@ -305,7 +306,7 @@ export function DirectorDashboard() {
                         <span className="text-gray-500 ml-1">{i.target_date}</span>
                       </li>
                     ))}
-                    {targets90.length === 0 && <li className="text-gray-500">None.</li>}
+                    {targets90.length === 0 && <li className="text-gray-500">{ui.none}</li>}
                   </ul>
                 </div>
               </div>

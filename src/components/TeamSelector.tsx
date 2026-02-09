@@ -1,4 +1,5 @@
 import type { Team } from '@/types/db'
+import { ui } from '@/lib/i18n'
 
 interface TeamSelectorProps {
   teams: Team[]
@@ -7,7 +8,7 @@ interface TeamSelectorProps {
   label?: string
 }
 
-export function TeamSelector({ teams, selectedId, onSelect, label = 'Team' }: TeamSelectorProps) {
+export function TeamSelector({ teams, selectedId, onSelect, label = ui.team }: TeamSelectorProps) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -16,7 +17,7 @@ export function TeamSelector({ teams, selectedId, onSelect, label = 'Team' }: Te
         onChange={(e) => onSelect(e.target.value)}
         className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
       >
-        <option value="">Select team…</option>
+        <option value="">{ui.selectTeam}</option>
         {teams.map((t) => (
           <option key={t.id} value={t.id}>
             {t.name}

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
 import { TeamSelector } from '@/components/TeamSelector'
+import { ui } from '@/lib/i18n'
 import type { Team } from '@/types/db'
 import type { ItemWithCounts } from '@/types/db'
 
@@ -100,7 +101,7 @@ export function Home() {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Home</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 mb-4">{ui.home}</h1>
         <div className="mb-6">
           <TeamSelector
             teams={teams}
@@ -110,29 +111,29 @@ export function Home() {
         </div>
 
         {itemsLoading ? (
-          <p className="text-gray-500">Loading…</p>
+          <p className="text-gray-500">{ui.loading}</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             <Card
-              title="Items without update (14 days)"
+              title={ui.itemsWithoutUpdate14}
               count={itemsWithoutRecentUpdate.length}
               to="/board"
               query={selectedTeamId ? `?team=${selectedTeamId}` : ''}
             />
             <Card
-              title="Open blockers"
+              title={ui.openBlockers}
               count={openBlockers.length}
               to="/board"
               query={selectedTeamId ? `?team=${selectedTeamId}` : ''}
             />
             <Card
-              title="Open help requests"
+              title={ui.openHelp}
               count={openHelp.length}
               to="/board"
               query={selectedTeamId ? `?team=${selectedTeamId}` : ''}
             />
             <Card
-              title="Target dates (next 30 days)"
+              title={ui.targetDatesNext30}
               count={upcomingTargets.length}
               to="/board"
               query={selectedTeamId ? `?team=${selectedTeamId}` : ''}

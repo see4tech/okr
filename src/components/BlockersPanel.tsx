@@ -1,17 +1,9 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
+import { ui, formatDate, blockerSeverityLabel, blockerStatusLabel } from '@/lib/i18n'
 import { BLOCKER_SEVERITIES, BLOCKER_STATUSES } from '@/types/enums'
 import type { Blocker } from '@/types/db'
-
-function formatDate(s: string | null) {
-  if (!s) return '—'
-  return new Date(s).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 export function BlockersPanel({
   itemId,
@@ -106,14 +98,14 @@ export function BlockersPanel({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-900">Blockers</h3>
+        <h3 className="font-medium text-gray-900">{ui.blockers}</h3>
         {canEdit && (
           <button
             type="button"
             onClick={() => setShowForm((v) => !v)}
             className="text-sm text-blue-600 hover:underline"
           >
-            {showForm ? 'Cancel' : 'Add blocker'}
+            {showForm ? ui.cancel : ui.addBlocker}
           </button>
         )}
       </div>
@@ -133,11 +125,11 @@ export function BlockersPanel({
             <div className="flex justify-between items-start">
               <span className="font-medium text-gray-900">{b.title}</span>
               <span className="text-gray-500 text-xs">
-                {b.severity} · {b.status}
+                {blockerSeverityLabel(b.severity)} · {blockerStatusLabel(b.status)}
               </span>
             </div>
             {b.detail && <p className="mt-1 text-gray-600">{b.detail}</p>}
-            <p className="mt-1 text-gray-500">ETA: {formatDate(b.eta)}</p>
+            <p className="mt-1 text-gray-500">{ui.eta}: {formatDate(b.eta)}</p>
             {canEdit && (
               <div className="mt-2 flex gap-2 flex-wrap">
                 <select
@@ -149,7 +141,7 @@ export function BlockersPanel({
                 >
                   {BLOCKER_STATUSES.map((s) => (
                     <option key={s} value={s}>
-                      {s}
+                      {blockerStatusLabel(s)}
                     </option>
                   ))}
                 </select>
@@ -158,7 +150,7 @@ export function BlockersPanel({
                   onClick={() => deleteMutation.mutate(b.id)}
                   className="text-xs text-red-600 hover:underline"
                 >
-                  Delete
+                  {ui.delete}
                 </button>
               </div>
             )}
@@ -166,7 +158,7 @@ export function BlockersPanel({
         ))}
       </ul>
       {blockers.length === 0 && !showForm && (
-        <p className="text-sm text-gray-500">No blockers.</p>
+        <p className="text-sm text-gray-500">{ui.noBlockers}</p>
       )}
     </div>
   )
@@ -203,14 +195,14 @@ function BlockerForm({
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
+        placeholder={ui.title}
         required
         className="block w-full rounded border border-gray-300 py-1 px-2 text-sm"
       />
       <textarea
         value={detail}
         onChange={(e) => setDetail(e.target.value)}
-        placeholder="Detail"
+        placeholder={ui.detail}
         rows={2}
         className="block w-full rounded border border-gray-300 py-1 px-2 text-sm"
       />
@@ -221,7 +213,7 @@ function BlockerForm({
       >
         {BLOCKER_SEVERITIES.map((s) => (
           <option key={s} value={s}>
-            {s}
+            {blockerSeverityLabel(s)}
           </option>
         ))}
       </select>
@@ -237,10 +229,10 @@ function BlockerForm({
           disabled={isSubmitting}
           className="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
         >
-          Add
+          {ui.add}
         </button>
         <button type="button" onClick={onCancel} className="text-sm text-gray-600 hover:underline">
-          Cancel
+          {ui.cancel}
         </button>
       </div>
     </form>

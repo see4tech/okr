@@ -1,18 +1,9 @@
+import { ui, formatDateTime } from '@/lib/i18n'
 import type { ItemUpdateWithAuthor } from '@/types/db'
-
-function formatDateTime(s: string) {
-  return new Date(s).toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 export function UpdatesTimeline({ updates }: { updates: ItemUpdateWithAuthor[] }) {
   if (updates.length === 0) {
-    return <p className="text-sm text-gray-500">No updates yet.</p>
+    return <p className="text-sm text-gray-500">{ui.noUpdatesYet}</p>
   }
 
   return (

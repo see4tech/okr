@@ -8,6 +8,7 @@ import { BlockersPanel } from '@/components/BlockersPanel'
 import { HelpRequestsPanel } from '@/components/HelpRequestsPanel'
 import { UpdatesTimeline } from '@/components/UpdatesTimeline'
 import { CommentsPanel } from '@/components/CommentsPanel'
+import { ui, itemStatusLabel } from '@/lib/i18n'
 import type { Item } from '@/types/db'
 import type { Blocker } from '@/types/db'
 import type { HelpRequest } from '@/types/db'
@@ -143,7 +144,7 @@ export function ItemDetail() {
 
   const saveUpdateMutation = useMutation({
     mutationFn: async (values: ItemUpdateFormValues) => {
-      if (!id || id === 'new' || !item) throw new Error('No item')
+      if (!id || id === 'new' || !item) throw new Error(ui.noItem)
       const snapshot = {
         status: values.status,
         status_reason: values.status_reason ?? null,
@@ -188,9 +189,9 @@ export function ItemDetail() {
   if (error || !item) {
     return (
       <Layout>
-        <p className="text-red-600">{error ? String(error) : 'Item not found.'}</p>
+        <p className="text-red-600">{error ? String(error) : ui.itemNotFound}</p>
         <button type="button" onClick={() => navigate('/board')} className="mt-2 text-blue-600 hover:underline">
-          Back to board
+          {ui.backToBoard}
         </button>
       </Layout>
     )
@@ -199,17 +200,17 @@ export function ItemDetail() {
   if (isLoading) {
     return (
       <Layout>
-        <p className="text-gray-500">Loading…</p>
+        <p className="text-gray-500">{ui.loading}</p>
       </Layout>
     )
   }
 
   const tabs: { id: TabId; label: string }[] = [
-    { id: 'form', label: 'Edit' },
-    { id: 'blockers', label: 'Blockers' },
-    { id: 'help', label: 'Help requests' },
-    { id: 'comments', label: 'Comments' },
-    { id: 'timeline', label: 'Updates' },
+    { id: 'form', label: ui.edit },
+    { id: 'blockers', label: ui.blockers },
+    { id: 'help', label: ui.helpRequests },
+    { id: 'comments', label: ui.comments },
+    { id: 'timeline', label: ui.updates },
   ]
 
   return (
@@ -221,13 +222,13 @@ export function ItemDetail() {
             onClick={() => navigate('/board')}
             className="text-sm text-gray-600 hover:underline"
           >
-            ← Back to board
+            {ui.backToBoard}
           </button>
         </div>
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">{item.title}</h1>
         <p className="text-sm text-gray-500 mb-4">
-          Status: {item.status}
-          {item.target_date && ` · Target: ${new Date(item.target_date).toLocaleDateString()}`}
+          {ui.status}: {itemStatusLabel(item.status)}
+          {item.target_date && ` · ${ui.target}: ${new Date(item.target_date).toLocaleDateString('es')}`}
         </p>
 
         <div className="flex gap-2 border-b border-gray-200 mb-4">
@@ -299,7 +300,7 @@ function ItemNewPage() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      if (!teamId || !title.trim()) throw new Error('Team and title required')
+      if (!teamId || !title.trim()) throw new Error(ui.teamAndTitleRequired)
       const { data, error: e } = await supabase
         .from('items')
         .insert({
@@ -316,12 +317,12 @@ function ItemNewPage() {
       queryClient.invalidateQueries({ queryKey: ['items'] })
       navigate(`/item/${data.id}`)
     },
-    onError: (err) => setError(err instanceof Error ? err.message : 'Failed'),
+    onError: (err) => setError(err instanceof Error ? err.message : ui.failed),
   })
 
   return (
     <div className="max-w-md">
-      <h1 className="text-xl font-semibold text-gray-900 mb-4">Create item</h1>
+      <h1 className="text-xl font-semibold text-gray-900 mb-4">{ui.createItem}</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -331,14 +332,14 @@ function ItemNewPage() {
         className="space-y-4"
       >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Team</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{ui.team}</label>
           <select
             value={teamId ?? ''}
             onChange={(e) => setTeamId(e.target.value || null)}
             required
             className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
           >
-            <option value="">Select team…</option>
+            <option value="">{ui.selectTeam}</option>
             {teams.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name}
@@ -347,7 +348,7 @@ function ItemNewPage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{ui.title}</label>
           <input
             type="text"
             value={title}
@@ -362,7 +363,7 @@ function ItemNewPage() {
           disabled={createMutation.isPending}
           className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {createMutation.isPending ? 'Creating…' : 'Create'}
+          {createMutation.isPending ? ui.creating : ui.create}
         </button>
       </form>
     </div>

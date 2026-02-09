@@ -5,20 +5,21 @@ import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
 import { TeamSelector } from '@/components/TeamSelector'
 import { ItemTable } from '@/components/ItemTable'
+import { ui, itemStatusLabel } from '@/lib/i18n'
 import { ITEM_STATUSES } from '@/types/enums'
 import type { Team } from '@/types/db'
 import type { ItemWithCounts } from '@/types/db'
 
 function downloadCsv(items: ItemWithCounts[], openBlockers: Record<string, number>, openHelp: Record<string, number>) {
   const headers = [
-    'Title',
-    'Status',
-    'Owner',
-    'Open Blockers',
-    'Open Help',
-    'Next Step',
-    'Target Date',
-    'Last Update',
+    ui.csvHeaders.title,
+    ui.csvHeaders.status,
+    ui.csvHeaders.owner,
+    ui.csvHeaders.openBlockers,
+    ui.csvHeaders.openHelp,
+    ui.csvHeaders.nextStep,
+    ui.csvHeaders.targetDate,
+    ui.csvHeaders.lastUpdate,
   ]
   const rows = items.map((i) => [
     i.title,
@@ -174,7 +175,7 @@ export function TeamBoard() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Team Board</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 mb-4">{ui.teamBoard}</h1>
         <div className="mb-4 flex flex-wrap gap-4 items-end">
           <TeamSelector
             teams={teams}
@@ -182,28 +183,28 @@ export function TeamBoard() {
             onSelect={handleTeamSelect}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.status}</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="rounded-md border border-gray-300 py-2 px-3 text-sm"
             >
-              <option value="">All</option>
+              <option value="">{ui.all}</option>
               {ITEM_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {itemStatusLabel(s)}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Objective</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.objective}</label>
             <select
               value={objectiveFilter}
               onChange={(e) => setObjectiveFilter(e.target.value)}
               className="rounded-md border border-gray-300 py-2 px-3 text-sm"
             >
-              <option value="">All</option>
+              <option value="">{ui.all}</option>
               {objectives.map((o) => (
                 <option key={o.id} value={o.id}>
                   {o.title}
@@ -212,7 +213,7 @@ export function TeamBoard() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Target from</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.targetFrom}</label>
             <input
               type="date"
               value={targetFrom}
@@ -221,7 +222,7 @@ export function TeamBoard() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Target to</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.targetTo}</label>
             <input
               type="date"
               value={targetTo}
@@ -234,7 +235,7 @@ export function TeamBoard() {
             onClick={handleExportCsv}
             className="rounded-md border border-gray-300 bg-white py-2 px-3 text-sm text-gray-700 hover:bg-gray-50"
           >
-            Export CSV
+            {ui.exportCsv}
           </button>
         </div>
         <div className="mb-2 flex justify-end">
@@ -242,11 +243,11 @@ export function TeamBoard() {
             href={effectiveTeamId ? `/item/new?team=${effectiveTeamId}` : '/item/new'}
             className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700"
           >
-            Create item
+            {ui.createItem}
           </a>
         </div>
         {isLoading ? (
-          <p className="text-gray-500">Loading…</p>
+          <p className="text-gray-500">{ui.loading}</p>
         ) : (
           <ItemTable
             items={items}
