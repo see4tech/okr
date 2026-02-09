@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
 import { TeamSelector } from '@/components/TeamSelector'
 import { ItemTable } from '@/components/ItemTable'
-import { ui, itemStatusLabel } from '@/lib/i18n'
+import { ui, itemStatusLabel, formatDateTime } from '@/lib/i18n'
 import { ITEM_STATUSES } from '@/types/enums'
 import type { Team } from '@/types/db'
 import type { ItemWithCounts } from '@/types/db'
@@ -50,6 +50,7 @@ export function TeamBoard() {
   const [targetFrom, setTargetFrom] = useState<string>('')
   const [targetTo, setTargetTo] = useState<string>('')
   const [objectiveFilter, setObjectiveFilter] = useState<string>('')
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null)
 
   const { data: teams = [] } = useQuery({
     queryKey: ['teams'],
@@ -157,6 +158,73 @@ export function TeamBoard() {
     return m
   }, [helpRequests])
 
+  const { data: expandedComments = [] } = useQuery({
+    queryKey: ['comments', expandedItemId],
+    queryFn: async () => {
+      if (!expandedItemId) return []
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('item_id', expandedItemId)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      const list = (data ?? []) as { id: string; author_id: string; body: string; created_at: string }[]
+      const authorIds = [...new Set(list.map((c) => c.author_id))]
+      if (authorIds.length > 0) {
+        const { data: profiles } = await supabase.from('profiles').select('id, email').in('id', authorIds)
+        const map = new Map((profiles ?? []).map((p: { id: string; email: string | null }) => [p.id, p.email]))
+        list.forEach((c) => ((c as { author_email?: string }).author_email = map.get(c.author_id) ?? null))
+      }
+      return list
+    },
+    enabled: !!expandedItemId,
+  })
+
+  const { data: expandedUpdates = [] } = useQuery({
+    queryKey: ['item_updates', expandedItemId],
+    queryFn: async () => {
+      if (!expandedItemId) return []
+      const { data, error } = await supabase
+        .from('item_updates')
+        .select('*')
+        .eq('item_id', expandedItemId)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      const list = (data ?? []) as { id: string; updated_by: string; snapshot: unknown; created_at: string }[]
+      const authorIds = [...new Set(list.map((u) => u.updated_by))]
+      if (authorIds.length > 0) {
+        const { data: profiles } = await supabase.from('profiles').select('id, email').in('id', authorIds)
+        const map = new Map((profiles ?? []).map((p: { id: string; email: string | null }) => [p.id, p.email]))
+        list.forEach((u) => ((u as { author_email?: string }).author_email = map.get(u.updated_by) ?? null))
+      }
+      return list
+    },
+    enabled: !!expandedItemId,
+  })
+
+  const expandedActivity = useMemo(() => {
+    if (!expandedItemId) return []
+    type Entry = { type: 'comment'; id: string; at: string; author: string; body: string } | { type: 'update'; id: string; at: string; author: string; snapshot: Record<string, unknown> }
+    const entries: Entry[] = [
+      ...expandedComments.map((c) => ({
+        type: 'comment' as const,
+        id: c.id,
+        at: c.created_at,
+        author: (c as { author_email?: string }).author_email ?? ui.unknown,
+        body: c.body,
+      })),
+      ...expandedUpdates.map((u) => ({
+        type: 'update' as const,
+        id: u.id,
+        at: u.created_at,
+        author: (u as { author_email?: string }).author_email ?? ui.unknown,
+        snapshot: (u.snapshot as Record<string, unknown>) ?? {},
+      })),
+    ]
+    entries.sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime())
+    return entries
+  }, [expandedItemId, expandedComments, expandedUpdates])
+
   const handleExportCsv = () => {
     downloadCsv(items, openBlockersCount, openHelpCount)
   }
@@ -247,6 +315,10 @@ export function TeamBoard() {
             items={items}
             openBlockersCount={openBlockersCount}
             openHelpCount={openHelpCount}
+            expandedItemId={expandedItemId}
+            onToggleExpand={(id) => setExpandedItemId((prev) => (prev === id ? null : id))}
+            expandedActivity={expandedActivity}
+            formatDateTime={formatDateTime}
           />
         )}
       </div>
