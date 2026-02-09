@@ -1,0 +1,28 @@
+import type { Team } from '@/types/db'
+
+interface TeamSelectorProps {
+  teams: Team[]
+  selectedId: string | null
+  onSelect: (teamId: string) => void
+  label?: string
+}
+
+export function TeamSelector({ teams, selectedId, onSelect, label = 'Team' }: TeamSelectorProps) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <select
+        value={selectedId ?? ''}
+        onChange={(e) => onSelect(e.target.value)}
+        className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      >
+        <option value="">Select team…</option>
+        {teams.map((t) => (
+          <option key={t.id} value={t.id}>
+            {t.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}

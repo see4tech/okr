@@ -1,0 +1,108 @@
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { ITEM_STATUSES } from '@/types/enums'
+import type { Item } from '@/types/db'
+
+const itemUpdateSchema = z.object({
+  status: z.enum(ITEM_STATUSES as unknown as [string, ...string[]]),
+  status_reason: z.string().optional(),
+  blockers_summary: z.string().optional(),
+  help_needed_summary: z.string().optional(),
+  next_step: z.string().optional(),
+  target_date: z.string().optional(),
+})
+
+export type ItemUpdateFormValues = z.infer<typeof itemUpdateSchema>
+
+interface ItemFormProps {
+  item: Item
+  onSubmit: (values: ItemUpdateFormValues) => Promise<void>
+  disabled?: boolean
+}
+
+export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ItemUpdateFormValues>({
+    resolver: zodResolver(itemUpdateSchema),
+    defaultValues: {
+      status: item.status,
+      status_reason: item.status_reason ?? '',
+      blockers_summary: item.blockers_summary ?? '',
+      help_needed_summary: item.help_needed_summary ?? '',
+      next_step: item.next_step ?? '',
+      target_date: item.target_date ? item.target_date.slice(0, 10) : '',
+    },
+  })
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <select
+          {...register('status')}
+          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+        >
+          {ITEM_STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        {errors.status && (
+          <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+        )}
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Status reason</label>
+        <textarea
+          {...register('status_reason')}
+          rows={2}
+          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Blockers summary</label>
+        <textarea
+          {...register('blockers_summary')}
+          rows={2}
+          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Help needed summary</label>
+        <textarea
+          {...register('help_needed_summary')}
+          rows={2}
+          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Next step</label>
+        <input
+          type="text"
+          {...register('next_step')}
+          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Target date</label>
+        <input
+          type="date"
+          {...register('target_date')}
+          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={disabled || isSubmitting}
+        className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {isSubmitting ? 'Saving…' : 'Save update'}
+      </button>
+    </form>
+  )
+}
