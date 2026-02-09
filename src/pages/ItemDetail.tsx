@@ -35,7 +35,8 @@ export function ItemDetail() {
   const { data: profile } = useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('role').eq('id', userId).single()
+      const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle()
+      if (error) throw error
       return data as { role: string } | null
     },
     enabled: !!userId,

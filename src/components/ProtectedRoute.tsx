@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { supabase } from '@/lib/supabaseClient'
+import { ensureProfile } from '@/lib/auth'
 import { ui } from '@/lib/i18n'
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -12,12 +13,14 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(!!s)
       setLoading(false)
+      if (s?.user) ensureProfile(s.user).catch(() => {})
     })
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(!!s)
       setLoading(false)
+      if (s?.user) ensureProfile(s.user).catch(() => {})
     })
     return () => subscription.unsubscribe()
   }, [])

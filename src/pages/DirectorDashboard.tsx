@@ -20,7 +20,8 @@ export function DirectorDashboard() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return null
-      const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+      const { data, error } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+      if (error) throw error
       return data as { role: string } | null
     },
   })

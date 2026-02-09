@@ -22,12 +22,13 @@ export async function signOut() {
 
 /** Create profile row if missing (client-side upsert after login). */
 export async function ensureProfile(user: { id: string; email?: string | null }): Promise<Profile | null> {
-  const { data: existing } = await supabase
+  const { data: existing, error: fetchError } = await supabase
     .from('profiles')
     .select('id')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
+  if (fetchError) throw fetchError
   if (existing) return existing as unknown as Profile
 
   const { data: inserted, error } = await supabase
@@ -42,14 +43,15 @@ export async function ensureProfile(user: { id: string; email?: string | null })
 
   if (error) {
     // RLS or unique conflict - profile may have been created by another request
-    const { data: retry } = await supabase.from('profiles').select().eq('id', user.id).single()
+    const { data: retry, error: retryErr } = await supabase.from('profiles').select().eq('id', user.id).maybeSingle()
+    if (retryErr) throw retryErr
     return retry as unknown as Profile
   }
   return inserted as unknown as Profile
 }
 
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
   if (error || !data) return null
   return data as unknown as Profile
 }
