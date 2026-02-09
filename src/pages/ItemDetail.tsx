@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
@@ -341,24 +341,17 @@ function ActivityList({
             <p className="mt-1 text-sm text-gray-800">{e.body}</p>
           ) : (
             <ul className="mt-1 text-sm text-gray-700 space-y-0.5 list-disc list-inside">
-              {'status' in e.snapshot && e.snapshot.status && (
-                <li>{ui.status}: {statusLabel(String(e.snapshot.status))}</li>
-              )}
-              {'next_step' in e.snapshot && e.snapshot.next_step && (
-                <li>{ui.nextStep}: {String(e.snapshot.next_step)}</li>
-              )}
-              {'target_date' in e.snapshot && e.snapshot.target_date && (
-                <li>{ui.targetDate}: {String(e.snapshot.target_date)}</li>
-              )}
-              {'status_reason' in e.snapshot && e.snapshot.status_reason && (
-                <li>{ui.statusReason}: {String(e.snapshot.status_reason)}</li>
-              )}
-              {'blockers_summary' in e.snapshot && e.snapshot.blockers_summary && (
-                <li>{ui.blockersSummary}: {String(e.snapshot.blockers_summary)}</li>
-              )}
-              {'help_needed_summary' in e.snapshot && e.snapshot.help_needed_summary && (
-                <li>{ui.helpNeededSummary}: {String(e.snapshot.help_needed_summary)}</li>
-              )}
+              {(() => {
+                const s = e.snapshot as Record<string, string | null | undefined>
+                const items: ReactNode[] = []
+                if (s.status != null && s.status !== '') items.push(<li key="status">{ui.status}: {statusLabel(s.status)}</li>)
+                if (s.next_step != null && s.next_step !== '') items.push(<li key="next_step">{ui.nextStep}: {s.next_step}</li>)
+                if (s.target_date != null && s.target_date !== '') items.push(<li key="target_date">{ui.targetDate}: {s.target_date}</li>)
+                if (s.status_reason != null && s.status_reason !== '') items.push(<li key="status_reason">{ui.statusReason}: {s.status_reason}</li>)
+                if (s.blockers_summary != null && s.blockers_summary !== '') items.push(<li key="blockers_summary">{ui.blockersSummary}: {s.blockers_summary}</li>)
+                if (s.help_needed_summary != null && s.help_needed_summary !== '') items.push(<li key="help_needed_summary">{ui.helpNeededSummary}: {s.help_needed_summary}</li>)
+                return items
+              })()}
             </ul>
           )}
         </li>
