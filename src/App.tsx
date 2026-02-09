@@ -37,14 +37,6 @@ export default function App() {
             }
           />
           <Route
-            path="/item/new"
-            element={
-              <ProtectedRoute>
-                <ItemDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/item/:id"
             element={
               <ProtectedRoute>
