@@ -45,7 +45,7 @@ export function TeamBoard() {
   const teamFromUrl = searchParams.get('team')
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(teamFromUrl || null)
   const [statusFilter, setStatusFilter] = useState<string>('')
-  const [ownerFilter, setOwnerFilter] = useState<string>('')
+  const [ownerFilter, _setOwnerFilter] = useState<string>('')
   const [targetFrom, setTargetFrom] = useState<string>('')
   const [targetTo, setTargetTo] = useState<string>('')
   const [objectiveFilter, setObjectiveFilter] = useState<string>('')
