@@ -106,7 +106,7 @@ export function ItemTable({
                                 ) : (
                                   <ul className="mt-0.5 text-gray-700 list-disc list-inside">
                                     {(e.snapshot as Record<string, string | null | undefined>).status != null && (
-                                      <li>{ui.status}: {itemStatusLabel((e.snapshot as Record<string, string>).status)}</li>
+                                      <li>{ui.status}: {itemStatusLabel(String((e.snapshot as Record<string, unknown>).status))}</li>
                                     )}
                                     {(e.snapshot as Record<string, string | null>).next_step != null && (e.snapshot as Record<string, string>).next_step !== '' && (
                                       <li>{ui.nextStep}: {(e.snapshot as Record<string, string>).next_step}</li>

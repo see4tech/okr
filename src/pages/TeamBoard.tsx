@@ -173,7 +173,7 @@ export function TeamBoard() {
       if (authorIds.length > 0) {
         const { data: profiles } = await supabase.from('profiles').select('id, email').in('id', authorIds)
         const map = new Map((profiles ?? []).map((p: { id: string; email: string | null }) => [p.id, p.email]))
-        list.forEach((c) => ((c as { author_email?: string }).author_email = map.get(c.author_id) ?? null))
+        list.forEach((c) => ((c as { author_email?: string }).author_email = map.get(c.author_id) ?? undefined))
       }
       return list
     },
@@ -195,7 +195,7 @@ export function TeamBoard() {
       if (authorIds.length > 0) {
         const { data: profiles } = await supabase.from('profiles').select('id, email').in('id', authorIds)
         const map = new Map((profiles ?? []).map((p: { id: string; email: string | null }) => [p.id, p.email]))
-        list.forEach((u) => ((u as { author_email?: string }).author_email = map.get(u.updated_by) ?? null))
+        list.forEach((u) => ((u as { author_email?: string }).author_email = map.get(u.updated_by) ?? undefined))
       }
       return list
     },
