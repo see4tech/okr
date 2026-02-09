@@ -6,6 +6,7 @@ import { Home } from '@/pages/Home'
 import { TeamBoard } from '@/pages/TeamBoard'
 import { ItemDetail } from '@/pages/ItemDetail'
 import { DirectorDashboard } from '@/pages/DirectorDashboard'
+import { TeamManagement } from '@/pages/TeamManagement'
 import { NotFound } from '@/pages/NotFound'
 
 const queryClient = new QueryClient({
@@ -49,6 +50,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <DirectorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/teams"
+            element={
+              <ProtectedRoute>
+                <TeamManagement />
               </ProtectedRoute>
             }
           />

@@ -290,6 +290,15 @@ function ItemNewPage() {
   const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>(null)
 
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data: { session: s } } = await supabase.auth.getSession()
+      return s
+    },
+  })
+  const userId = session?.user?.id ?? null
+
   const { data: teams = [] } = useQuery({
     queryKey: ['teams'],
     queryFn: async () => {
@@ -308,10 +317,16 @@ function ItemNewPage() {
           team_id: teamId,
           title: title.trim(),
           status: 'discovery',
+          owner_id: userId,
         })
         .select('id')
         .single()
-      if (e) throw e
+      if (e) {
+        const isPermissionDenied =
+          e.code === '42501' ||
+          (e.message && /row-level security|policy|permission|403/i.test(e.message))
+        throw new Error(isPermissionDenied ? ui.createItemPermissionDenied : e.message)
+      }
       return data as { id: string }
     },
     onSuccess: (data) => {
@@ -324,6 +339,7 @@ function ItemNewPage() {
   return (
     <div className="max-w-md">
       <h1 className="text-xl font-semibold text-gray-900 mb-4">{ui.createItem}</h1>
+      <p className="text-sm text-gray-600 mb-4">{ui.createItemHint}</p>
       <form
         onSubmit={(e) => {
           e.preventDefault()

@@ -36,7 +36,7 @@ export async function ensureProfile(user: { id: string; email?: string | null })
     .insert({
       id: user.id,
       email: user.email ?? null,
-      role: 'member',
+      role: 'member', // First admin: set in Supabase: UPDATE profiles SET role = 'admin' WHERE email = '...';
     })
     .select()
     .single()

@@ -1,5 +1,11 @@
 -- Seed: teams, one period, optional demo objective + item
--- Run after migrations. Use a user with role 'admin' to access Director Dashboard.
+-- Run after migrations.
+--
+-- Who is admin? The app role is in public.profiles.role ('admin' | 'manager' | 'member' | 'viewer').
+-- New users get role 'member' by default (see auth.ts ensureProfile). No admin is created automatically.
+-- To set the first admin, run in Supabase SQL (replace with the user's email):
+--   UPDATE public.profiles SET role = 'admin' WHERE email = 'tu-email@ejemplo.com';
+-- Or by user id: UPDATE public.profiles SET role = 'admin' WHERE id = 'uuid-del-usuario';
 
 INSERT INTO public.teams (id, name) VALUES
   (gen_random_uuid(), 'Gerencia Sistemas Hospitalidad'),

@@ -61,7 +61,9 @@ export const ui = {
   comments: 'Comentarios',
   updates: 'Actualizaciones',
   createItem: 'Crear ítem',
+  createItemHint: 'Solo necesitas equipo y título. Después de crear, podrás completar estado, siguiente paso, fecha objetivo, bloqueos y comentarios en la página del ítem.',
   teamAndTitleRequired: 'Equipo y título obligatorios',
+  createItemPermissionDenied: 'No tienes permiso para crear ítems en este equipo. Solo miembros y gestores pueden crear ítems; si eres solo espectador, pide que te asignen el rol de miembro.',
   noItem: 'Sin ítem',
   exportCsv: 'Exportar CSV',
   csvHeaders: {
@@ -93,6 +95,17 @@ export const ui = {
   itemNotFound: 'Ítem no encontrado.',
   accessDeniedDirector: 'Acceso denegado. El panel de director es solo para administradores.',
   target: 'Objetivo',
+  adminTeams: 'Administrar equipos',
+  manageTeamMembers: 'Miembros del equipo',
+  addMember: 'Añadir al equipo',
+  selectUser: 'Seleccionar usuario…',
+  memberRole: 'Rol en el equipo',
+  removeMember: 'Quitar del equipo',
+  accessDeniedAdmin: 'Acceso denegado. Solo administradores pueden gestionar equipos.',
+  noMembersYet: 'Aún no hay miembros en este equipo.',
+  memberAdded: 'Usuario añadido al equipo.',
+  memberRemoved: 'Usuario quitado del equipo.',
+  roleUpdated: 'Rol actualizado.',
 } as const
 
 export const itemStatusLabels: Record<string, string> = {
@@ -134,6 +147,12 @@ export const helpRequestStatusLabels: Record<string, string> = {
   open: 'Abierto',
   in_progress: 'En progreso',
   done: 'Hecho',
+}
+
+export const teamMemberRoleLabels: Record<string, string> = {
+  manager: 'Gestor',
+  member: 'Miembro',
+  viewer: 'Espectador',
 }
 
 export function formatDate(s: string | null, locale = 'es'): string {
