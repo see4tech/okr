@@ -47,8 +47,10 @@ export function Layout({ children, selectedTeamId, onSelectTeam }: LayoutProps) 
   const navLinks = [
     { to: '/', label: ui.home, icon: null as React.ReactNode },
     { to: '/board', label: ui.teamBoard, icon: null as React.ReactNode },
-    { to: '/director', label: ui.director, icon: null as React.ReactNode },
-    ...(isAdmin ? [{ to: '/admin/teams', label: ui.adminTeams, icon: null as React.ReactNode }] : []),
+    ...(isAdmin ? [
+      { to: '/director', label: ui.director, icon: null as React.ReactNode },
+      { to: '/admin/teams', label: ui.adminTeams, icon: null as React.ReactNode },
+    ] : []),
   ]
 
   function isActive(path: string) {
@@ -117,6 +119,8 @@ export function Layout({ children, selectedTeamId, onSelectTeam }: LayoutProps) 
           navLinks={navLinks}
           selectedTeamId={selectedTeamId ?? null}
           onSelectTeam={onSelectTeam}
+          userId={userId}
+          isAdmin={isAdmin}
         />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}

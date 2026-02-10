@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
@@ -14,6 +15,8 @@ interface SidebarProps {
   navLinks: NavLink[]
   selectedTeamId?: string | null
   onSelectTeam?: (teamId: string | null) => void
+  userId: string
+  isAdmin: boolean
 }
 
 const navIcons: Record<string, React.ReactNode> = {
@@ -40,11 +43,12 @@ const navIcons: Record<string, React.ReactNode> = {
   ),
 }
 
-export function Sidebar({ navLinks, selectedTeamId, onSelectTeam }: SidebarProps) {
+export function Sidebar({ navLinks, selectedTeamId, onSelectTeam, userId, isAdmin }: SidebarProps) {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const { data: teams = [] } = useQuery({
+  // Admins see all teams; regular users only see teams they belong to
+  const { data: allTeams = [] } = useQuery({
     queryKey: ['teams'],
     queryFn: async () => {
       const { data, error } = await supabase.from('teams').select('*').order('name')
@@ -53,6 +57,25 @@ export function Sidebar({ navLinks, selectedTeamId, onSelectTeam }: SidebarProps
     },
   })
 
+  const { data: memberTeamIds = [] } = useQuery({
+    queryKey: ['my_team_ids', userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('team_id')
+        .eq('user_id', userId)
+      if (error) throw error
+      return (data ?? []).map((r: { team_id: string }) => r.team_id)
+    },
+    enabled: !!userId && !isAdmin,
+  })
+
+  const teams = useMemo(() => {
+    if (isAdmin) return allTeams
+    const idSet = new Set(memberTeamIds)
+    return allTeams.filter((t) => idSet.has(t.id))
+  }, [isAdmin, allTeams, memberTeamIds])
+
   function isActive(path: string) {
     if (path === '/') return location.pathname === '/'
     return location.pathname.startsWith(path)
@@ -60,10 +83,8 @@ export function Sidebar({ navLinks, selectedTeamId, onSelectTeam }: SidebarProps
 
   function handleTeamClick(teamId: string | null) {
     if (onSelectTeam) {
-      // Page handles team selection in-place
       onSelectTeam(teamId)
     } else {
-      // Navigate to board filtered by team
       navigate(teamId ? `/board?team=${teamId}` : '/board')
     }
   }
@@ -90,7 +111,7 @@ export function Sidebar({ navLinks, selectedTeamId, onSelectTeam }: SidebarProps
         ))}
       </nav>
 
-      {/* Teams section — always visible */}
+      {/* Teams section */}
       <div className="mx-3 my-2 border-t border-gray-200" />
       <div className="px-4 pb-2">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
