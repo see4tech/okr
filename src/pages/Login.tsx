@@ -1,4 +1,4 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { signInWithPassword, signUp } from '@/lib/auth'
 import { ui } from '@/lib/i18n'
@@ -20,7 +20,6 @@ export function Login() {
     try {
       if (isSignUp) {
         await signUp(email, password)
-        setError(null)
         setPassword('')
         setError(ui.checkEmail)
         return
@@ -38,14 +37,25 @@ export function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <img src="/logo.png" alt={ui.appName} className="h-56 w-auto mx-auto mb-3 drop-shadow-lg" />
-          <p className="text-brand-300 text-sm mt-1">Sistema de seguimiento de OKRs</p>
+        
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <img
+            src="/logo.png"
+            alt={ui.appName}
+            className="h-56 w-auto mx-auto mb-4 drop-shadow-xl"
+          />
+          <p className="text-brand-300 text-sm mt-1">
+            Sistema de seguimiento de OKRs
+          </p>
         </div>
+
+        {/* Card */}
         <div className="rounded-2xl bg-white p-8 shadow-xl">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">
             {isSignUp ? ui.signUp : ui.signIn}
           </h2>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -62,6 +72,7 @@ export function Login() {
                 placeholder="tu@email.com"
               />
             </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 {ui.password}
@@ -76,11 +87,13 @@ export function Login() {
                 className="block w-full rounded-lg border border-gray-300 py-2.5 px-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               />
             </div>
+
             {error && (
               <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2" role="alert">
                 {error}
               </p>
             )}
+
             <button
               type="submit"
               disabled={loading}
@@ -89,6 +102,7 @@ export function Login() {
               {loading ? '...' : isSignUp ? ui.signUp : ui.signIn}
             </button>
           </form>
+
           <button
             type="button"
             onClick={() => {
@@ -100,6 +114,7 @@ export function Login() {
             {isSignUp ? ui.alreadyHaveAccount : ui.needAccount}
           </button>
         </div>
+
       </div>
     </div>
   )
