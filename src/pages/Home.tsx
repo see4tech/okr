@@ -103,7 +103,7 @@ export function Home() {
 
   return (
     <Layout
-      showSidebar
+      showTeams
       selectedTeamId={selectedTeamId}
       onSelectTeam={setSelectedTeamId}
     >

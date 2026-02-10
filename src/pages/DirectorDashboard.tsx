@@ -170,7 +170,7 @@ export function DirectorDashboard() {
   }
 
   return (
-    <Layout showSidebar={false}>
+    <Layout>
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">{ui.directorDashboard}</h1>
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-wrap gap-4 items-end">

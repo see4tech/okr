@@ -191,7 +191,7 @@ export function ItemDetail() {
 
   if (id === 'new') {
     return (
-      <Layout showSidebar={false}>
+      <Layout >
         <ItemNewPage />
       </Layout>
     )
@@ -199,7 +199,7 @@ export function ItemDetail() {
 
   if (error || !item) {
     return (
-      <Layout showSidebar={false}>
+      <Layout >
         <p className="text-red-600">{error ? String(error) : ui.itemNotFound}</p>
         <button type="button" onClick={() => navigate('/board')} className="mt-2 text-brand-600 hover:underline">
           {ui.backToBoard}
@@ -210,7 +210,7 @@ export function ItemDetail() {
 
   if (isLoading) {
     return (
-      <Layout showSidebar={false}>
+      <Layout >
         <p className="text-gray-500">{ui.loading}</p>
       </Layout>
     )
@@ -239,7 +239,7 @@ export function ItemDetail() {
   const statusBadgeClass = statusColorMap[item.status] ?? 'bg-gray-100 text-gray-700'
 
   return (
-    <Layout showSidebar={false}>
+    <Layout >
       <div className="max-w-4xl mx-auto">
         <div className="mb-4">
           <button

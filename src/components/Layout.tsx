@@ -10,10 +10,10 @@ interface LayoutProps {
   children: React.ReactNode
   selectedTeamId?: string | null
   onSelectTeam?: (teamId: string | null) => void
-  showSidebar?: boolean
+  showTeams?: boolean
 }
 
-export function Layout({ children, selectedTeamId, onSelectTeam, showSidebar = true }: LayoutProps) {
+export function Layout({ children, selectedTeamId, onSelectTeam, showTeams = false }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -46,10 +46,10 @@ export function Layout({ children, selectedTeamId, onSelectTeam, showSidebar = t
   }
 
   const navLinks = [
-    { to: '/', label: ui.home },
-    { to: '/board', label: ui.teamBoard },
-    { to: '/director', label: ui.director },
-    ...(isAdmin ? [{ to: '/admin/teams', label: ui.adminTeams }] : []),
+    { to: '/', label: ui.home, icon: null as React.ReactNode },
+    { to: '/board', label: ui.teamBoard, icon: null as React.ReactNode },
+    { to: '/director', label: ui.director, icon: null as React.ReactNode },
+    ...(isAdmin ? [{ to: '/admin/teams', label: ui.adminTeams, icon: null as React.ReactNode }] : []),
   ]
 
   function isActive(path: string) {
@@ -59,8 +59,8 @@ export function Layout({ children, selectedTeamId, onSelectTeam, showSidebar = t
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      {/* Header */}
-      <header className="bg-brand-900 text-white px-4 py-0 flex items-center justify-between h-14 shrink-0 shadow-md z-20">
+      {/* Thin header: logo + user */}
+      <header className="bg-brand-900 text-white px-4 flex items-center justify-between h-14 shrink-0 shadow-md z-20">
         <div className="flex items-center gap-2">
           {/* Mobile menu toggle */}
           <button
@@ -78,24 +78,8 @@ export function Layout({ children, selectedTeamId, onSelectTeam, showSidebar = t
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                isActive(link.to)
-                  ? 'bg-brand-700 text-white'
-                  : 'text-brand-200 hover:bg-brand-800 hover:text-white'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline text-sm text-brand-200 truncate max-w-[180px]">
+          <span className="hidden sm:inline text-sm text-brand-200 truncate max-w-[200px]">
             {userEmail}
           </span>
           <button
@@ -110,16 +94,16 @@ export function Layout({ children, selectedTeamId, onSelectTeam, showSidebar = t
 
       {/* Mobile nav dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-brand-900 border-t border-brand-800 px-4 py-2 space-y-1 z-10">
+        <div className="md:hidden bg-white border-b border-gray-200 px-4 py-2 space-y-1 z-10 shadow-lg">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setMobileMenuOpen(false)}
-              className={`block px-3 py-2 rounded-md text-sm font-medium ${
+              className={`block px-3 py-2 rounded-lg text-sm font-medium ${
                 isActive(link.to)
-                  ? 'bg-brand-700 text-white'
-                  : 'text-brand-200 hover:bg-brand-800 hover:text-white'
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
               {link.label}
@@ -130,9 +114,12 @@ export function Layout({ children, selectedTeamId, onSelectTeam, showSidebar = t
 
       {/* Body: sidebar + main */}
       <div className="flex flex-1 overflow-hidden">
-        {showSidebar && onSelectTeam && (
-          <Sidebar selectedTeamId={selectedTeamId ?? null} onSelectTeam={onSelectTeam} />
-        )}
+        <Sidebar
+          navLinks={navLinks}
+          selectedTeamId={selectedTeamId ?? null}
+          onSelectTeam={onSelectTeam}
+          showTeams={showTeams}
+        />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>

@@ -267,7 +267,7 @@ export function TeamBoard() {
 
   return (
     <Layout
-      showSidebar
+      showTeams
       selectedTeamId={selectedTeamId}
       onSelectTeam={handleTeamSelect}
     >
