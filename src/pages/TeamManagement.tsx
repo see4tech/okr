@@ -11,7 +11,6 @@ const MEMBER_ROLES = ['viewer', 'member', 'manager'] as const
 type TabId = 'teams' | 'members'
 
 export function TeamManagement() {
-  const queryClient = useQueryClient()
   const [tab, setTab] = useState<TabId>('teams')
 
   const { data: session } = useQuery({
@@ -82,7 +81,7 @@ export function TeamManagement() {
           ))}
         </div>
 
-        {tab === 'teams' && <TeamsTab teams={teams} isAdmin={isAdmin} />}
+        {tab === 'teams' && <TeamsTab teams={teams} />}
         {tab === 'members' && <MembersTab teams={teams} isAdmin={isAdmin} />}
       </div>
     </Layout>
@@ -91,7 +90,7 @@ export function TeamManagement() {
 
 /* ─────────────────── Tab 1: Teams CRUD ─────────────────── */
 
-function TeamsTab({ teams, isAdmin }: { teams: Team[]; isAdmin: boolean }) {
+function TeamsTab({ teams }: { teams: Team[] }) {
   const queryClient = useQueryClient()
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
