@@ -144,7 +144,9 @@ export function Sidebar({ navLinks, selectedTeamId, onSelectTeam, userId, isAdmi
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
-            {team.icon ? (
+            {team.icon?.startsWith('data:') ? (
+              <img src={team.icon} alt="" className="w-6 h-6 shrink-0 rounded object-cover" />
+            ) : team.icon ? (
               <span className="w-6 h-6 shrink-0 flex items-center justify-center rounded text-sm">
                 {team.icon}
               </span>

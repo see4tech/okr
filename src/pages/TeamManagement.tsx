@@ -228,6 +228,8 @@ function TeamForm({ team, onClose }: { team: Team | null; onClose: () => void })
   const isEditing = !!team
   const [name, setName] = useState(team?.name ?? '')
   const [icon, setIcon] = useState(team?.icon ?? '')
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -249,6 +251,20 @@ function TeamForm({ team, onClose }: { team: Team | null; onClose: () => void })
       onClose()
     },
   })
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const dataUrl = await resizeImageToDataUrl(file, 64)
+      setIcon(dataUrl)
+    } finally {
+      setUploading(false)
+      // Reset input so same file can be re-selected
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-6">
@@ -274,43 +290,74 @@ function TeamForm({ team, onClose }: { team: Team | null; onClose: () => void })
             placeholder="Nombre del equipo"
           />
         </div>
+
+        {/* Icon picker */}
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-2">{ui.teamIcon}</label>
-          <div className="flex flex-wrap gap-1.5">
-            {TEAM_ICONS.map((emoji) => (
+
+          {/* Preview */}
+          {icon && (
+            <div className="flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-lg">
+              <TeamIcon icon={icon} name={name || '?'} size="lg" />
+              <span className="text-sm text-gray-600">
+                {isDataUrl(icon) ? ui.uploadImage : icon}
+              </span>
               <button
-                key={emoji}
+                type="button"
+                onClick={() => setIcon('')}
+                className="ml-auto text-xs text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {/* Emoji grid */}
+          <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto rounded-lg border border-gray-100 p-2">
+            {TEAM_ICONS.map((emoji, idx) => (
+              <button
+                key={`${emoji}-${idx}`}
                 type="button"
                 onClick={() => setIcon(emoji)}
-                className={`w-10 h-10 flex items-center justify-center rounded-lg text-lg border-2 transition-colors ${
+                className={`w-9 h-9 flex items-center justify-center rounded-lg text-lg border-2 transition-colors ${
                   icon === emoji
                     ? 'border-brand-500 bg-brand-50'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    : 'border-transparent hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 {emoji}
               </button>
             ))}
-            {/* Clear selection */}
+          </div>
+
+          {/* Upload divider + button */}
+          <div className="flex items-center gap-3 mt-3">
+            <div className="flex-1 border-t border-gray-200" />
+            <span className="text-xs text-gray-400">{ui.orUploadImage}</span>
+            <div className="flex-1 border-t border-gray-200" />
+          </div>
+          <div className="mt-3 flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             <button
               type="button"
-              onClick={() => setIcon('')}
-              className={`w-10 h-10 flex items-center justify-center rounded-lg text-xs border-2 transition-colors ${
-                icon === ''
-                  ? 'border-brand-500 bg-brand-50 text-brand-700 font-medium'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-400'
-              }`}
-              title="Sin icono"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="rounded-lg border border-gray-300 py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
             >
-              ✕
+              {uploading ? ui.saving : isDataUrl(icon) ? ui.changeImage : ui.uploadImage}
             </button>
+            {isDataUrl(icon) && (
+              <img src={icon} alt="" className="w-10 h-10 rounded-lg object-cover border border-gray-200" />
+            )}
           </div>
-          {icon && (
-            <p className="mt-2 text-sm text-gray-500">
-              Seleccionado: <span className="text-lg">{icon}</span>
-            </p>
-          )}
         </div>
+
         <div className="flex gap-2 pt-1">
           <button
             type="submit"
