@@ -97,15 +97,15 @@ export function BlockersPanel({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-900">{ui.blockers}</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-gray-900">{ui.blockers}</h3>
         {canEdit && (
           <button
             type="button"
             onClick={() => setShowForm((v) => !v)}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm font-medium text-brand-600 hover:text-brand-800"
           >
-            {showForm ? ui.cancel : ui.addBlocker}
+            {showForm ? ui.cancel : `+ ${ui.addBlocker}`}
           </button>
         )}
       </div>
@@ -117,16 +117,23 @@ export function BlockersPanel({
         />
       )}
       <ul className="space-y-2 mt-2">
-        {blockers.map((b) => (
+        {blockers.map((b) => {
+          const severityBorder: Record<string, string> = { critical: 'border-l-red-500', high: 'border-l-orange-400', medium: 'border-l-amber-400', low: 'border-l-gray-300' }
+          return (
           <li
             key={b.id}
-            className="rounded border border-gray-200 p-3 bg-gray-50 text-sm"
+            className={`rounded-lg border border-gray-200 border-l-4 ${severityBorder[b.severity] ?? 'border-l-gray-300'} p-3 bg-white text-sm shadow-sm`}
           >
             <div className="flex justify-between items-start">
               <span className="font-medium text-gray-900">{b.title}</span>
-              <span className="text-gray-500 text-xs">
-                {blockerSeverityLabel(b.severity)} · {blockerStatusLabel(b.status)}
-              </span>
+              <div className="flex gap-1.5">
+                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600">
+                  {blockerSeverityLabel(b.severity)}
+                </span>
+                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600">
+                  {blockerStatusLabel(b.status)}
+                </span>
+              </div>
             </div>
             {b.detail && <p className="mt-1 text-gray-600">{b.detail}</p>}
             <p className="mt-1 text-gray-500">{ui.eta}: {formatDate(b.eta)}</p>
@@ -155,7 +162,8 @@ export function BlockersPanel({
               </div>
             )}
           </li>
-        ))}
+          )
+        })}
       </ul>
       {blockers.length === 0 && !showForm && (
         <p className="text-sm text-gray-500">{ui.noBlockers}</p>
@@ -227,7 +235,7 @@ function BlockerForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
+          className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm"
         >
           {ui.add}
         </button>

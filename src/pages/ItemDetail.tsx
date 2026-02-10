@@ -191,7 +191,7 @@ export function ItemDetail() {
 
   if (id === 'new') {
     return (
-      <Layout>
+      <Layout showSidebar={false}>
         <ItemNewPage />
       </Layout>
     )
@@ -199,9 +199,9 @@ export function ItemDetail() {
 
   if (error || !item) {
     return (
-      <Layout>
+      <Layout showSidebar={false}>
         <p className="text-red-600">{error ? String(error) : ui.itemNotFound}</p>
-        <button type="button" onClick={() => navigate('/board')} className="mt-2 text-blue-600 hover:underline">
+        <button type="button" onClick={() => navigate('/board')} className="mt-2 text-brand-600 hover:underline">
           {ui.backToBoard}
         </button>
       </Layout>
@@ -210,7 +210,7 @@ export function ItemDetail() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <Layout showSidebar={false}>
         <p className="text-gray-500">{ui.loading}</p>
       </Layout>
     )
@@ -225,34 +225,55 @@ export function ItemDetail() {
     { id: 'timeline', label: ui.updates },
   ]
 
+  const statusColorMap: Record<string, string> = {
+    discovery: 'bg-blue-100 text-blue-800',
+    design: 'bg-purple-100 text-purple-800',
+    execution: 'bg-amber-100 text-amber-800',
+    validation: 'bg-cyan-100 text-cyan-800',
+    ready_to_deploy: 'bg-emerald-100 text-emerald-800',
+    deploying: 'bg-lime-100 text-lime-800',
+    in_production: 'bg-green-100 text-green-800',
+    paused: 'bg-gray-100 text-gray-700',
+    at_risk: 'bg-red-100 text-red-800',
+  }
+  const statusBadgeClass = statusColorMap[item.status] ?? 'bg-gray-100 text-gray-700'
+
   return (
-    <Layout>
+    <Layout showSidebar={false}>
       <div className="max-w-4xl mx-auto">
         <div className="mb-4">
           <button
             type="button"
             onClick={() => navigate('/board')}
-            className="text-sm text-gray-600 hover:underline"
+            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700"
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             {ui.backToBoard}
           </button>
         </div>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">{item.title}</h1>
-        <p className="text-sm text-gray-500 mb-4">
-          {ui.status}: {itemStatusLabel(item.status)}
-          {item.target_date && ` · ${ui.target}: ${new Date(item.target_date).toLocaleDateString('es')}`}
-        </p>
 
-        <div className="flex gap-2 border-b border-gray-200 mb-4">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900">{item.title}</h1>
+            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusBadgeClass}`}>
+              {itemStatusLabel(item.status)}
+            </span>
+          </div>
+          <p className="text-sm text-gray-500">
+            {item.target_date && `${ui.target}: ${new Date(item.target_date).toLocaleDateString('es')}`}
+          </p>
+        </div>
+
+        <div className="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto">
           {tabs.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px ${
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${
                 tab === t.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  ? 'border-brand-600 text-brand-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
               }`}
             >
               {t.label}
@@ -468,7 +489,7 @@ function ItemNewPage() {
         <button
           type="submit"
           disabled={createMutation.isPending}
-          className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-brand-600 py-2 px-4 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm"
         >
           {createMutation.isPending ? ui.creating : ui.create}
         </button>

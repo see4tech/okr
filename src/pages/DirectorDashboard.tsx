@@ -170,21 +170,21 @@ export function DirectorDashboard() {
   }
 
   return (
-    <Layout>
+    <Layout showSidebar={false}>
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">{ui.directorDashboard}</h1>
-        <div className="mb-6 flex flex-wrap gap-4 items-end">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{ui.directorDashboard}</h1>
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-wrap gap-4 items-end">
           <TeamSelector
             teams={teams}
             selectedId={teamFilter}
             onSelect={(id) => setTeamFilter(id || null)}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.status}</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{ui.status}</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-md border border-gray-300 py-2 px-3 text-sm"
+              className="rounded-lg border border-gray-300 py-1.5 px-2.5 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             >
               <option value="">{ui.all}</option>
               {ITEM_STATUSES.map((s) => (
@@ -207,7 +207,7 @@ export function DirectorDashboard() {
                 <ul className="space-y-1">
                   {pausedOrAtRisk.map((i) => (
                     <li key={i.id}>
-                      <Link to={`/item/${i.id}`} className="text-blue-600 hover:underline">
+                      <Link to={`/item/${i.id}`} className="text-brand-600 hover:text-brand-800 hover:underline font-medium">
                         {(i as Item & { teams?: { name: string } }).teams?.name}: {i.title}
                       </Link>
                       <span className="text-gray-500 text-sm ml-2">({itemStatusLabel(i.status)})</span>
@@ -220,8 +220,9 @@ export function DirectorDashboard() {
             <Section title={ui.openBlockersBySeverity}>
               <ul className="flex flex-wrap gap-4">
                 {['critical', 'high', 'medium', 'low'].map((sev) => (
-                  <li key={sev} className="rounded bg-gray-100 px-3 py-1 text-sm">
-                    {blockerSeverityLabel(sev)}: {openBlockersBySeverity[sev] ?? 0}
+                    <li key={sev} className="rounded-lg bg-white border border-gray-200 shadow-sm px-4 py-2 text-sm">
+                    <span className="font-semibold text-gray-900">{openBlockersBySeverity[sev] ?? 0}</span>
+                    <span className="text-gray-500 ml-1">{blockerSeverityLabel(sev)}</span>
                   </li>
                 ))}
               </ul>
@@ -273,7 +274,7 @@ export function DirectorDashboard() {
                   <ul className="space-y-1 text-sm">
                     {targets30.map((i) => (
                       <li key={i.id}>
-                        <Link to={`/item/${i.id}`} className="text-blue-600 hover:underline">
+                        <Link to={`/item/${i.id}`} className="text-brand-600 hover:text-brand-800 hover:underline font-medium">
                           {i.title}
                         </Link>
                         <span className="text-gray-500 ml-1">{i.target_date}</span>
@@ -287,7 +288,7 @@ export function DirectorDashboard() {
                   <ul className="space-y-1 text-sm">
                     {targets60.map((i) => (
                       <li key={i.id}>
-                        <Link to={`/item/${i.id}`} className="text-blue-600 hover:underline">
+                        <Link to={`/item/${i.id}`} className="text-brand-600 hover:text-brand-800 hover:underline font-medium">
                           {i.title}
                         </Link>
                         <span className="text-gray-500 ml-1">{i.target_date}</span>
@@ -301,7 +302,7 @@ export function DirectorDashboard() {
                   <ul className="space-y-1 text-sm">
                     {targets90.map((i) => (
                       <li key={i.id}>
-                        <Link to={`/item/${i.id}`} className="text-blue-600 hover:underline">
+                        <Link to={`/item/${i.id}`} className="text-brand-600 hover:text-brand-800 hover:underline font-medium">
                           {i.title}
                         </Link>
                         <span className="text-gray-500 ml-1">{i.target_date}</span>
@@ -321,8 +322,8 @@ export function DirectorDashboard() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section>
-      <h2 className="text-lg font-medium text-gray-900 mb-2">{title}</h2>
+    <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">{title}</h2>
       {children}
     </section>
   )

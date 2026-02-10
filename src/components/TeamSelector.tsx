@@ -15,7 +15,7 @@ export function TeamSelector({ teams, selectedId, onSelect, label = ui.team }: T
       <select
         value={selectedId ?? ''}
         onChange={(e) => onSelect(e.target.value)}
-        className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="block w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
       >
         <option value="">{ui.selectTeam}</option>
         {teams.map((t) => (

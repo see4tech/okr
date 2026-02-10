@@ -117,9 +117,9 @@ export function TeamManagement() {
 
   if (!isAdmin && profile !== undefined) {
     return (
-      <Layout>
+      <Layout showSidebar={false}>
         <p className="text-red-600">{ui.accessDeniedAdmin}</p>
-        <a href="/" className="mt-2 inline-block text-blue-600 hover:underline">
+        <a href="/" className="mt-2 inline-block text-brand-600 hover:underline">
           {ui.goHome}
         </a>
       </Layout>
@@ -131,16 +131,16 @@ export function TeamManagement() {
   const availableProfiles = profiles.filter((p) => !alreadyMemberIds.has(p.id))
 
   return (
-    <Layout>
+    <Layout showSidebar={false}>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">{ui.adminTeams}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{ui.adminTeams}</h1>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{ui.team}</label>
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
+          <label className="block text-xs font-medium text-gray-500 mb-1">{ui.team}</label>
           <select
             value={selectedTeamId ?? ''}
             onChange={(e) => setSelectedTeamId(e.target.value || null)}
-            className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+            className="block w-full rounded-lg border border-gray-300 py-2.5 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
           >
             <option value="">{ui.selectTeam}</option>
             {teams.map((t) => (
@@ -155,12 +155,12 @@ export function TeamManagement() {
           <p className="text-gray-500 text-sm">Selecciona un equipo para ver y gestionar sus miembros.</p>
         ) : (
           <>
-            <h2 className="text-lg font-medium text-gray-900 mb-2">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">
               {ui.manageTeamMembers} — {selectedTeam?.name}
             </h2>
 
-            <div className="rounded-md border border-gray-200 bg-gray-50 p-4 mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">{ui.addMember}</h3>
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5 mb-4">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">{ui.addMember}</h3>
               <form
                 onSubmit={(e) => {
                   e.preventDefault()
@@ -169,11 +169,11 @@ export function TeamManagement() {
                 className="flex flex-wrap items-end gap-3"
               >
                 <div className="min-w-[200px]">
-                  <label className="block text-xs text-gray-600 mb-1">{ui.selectUser}</label>
+                  <label className="block text-xs text-gray-500 mb-1">{ui.selectUser}</label>
                   <select
                     value={addUserId}
                     onChange={(e) => setAddUserId(e.target.value)}
-                    className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+                    className="block w-full rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                   >
                     <option value="">{ui.selectUser}</option>
                     {availableProfiles.map((p) => (
@@ -184,11 +184,11 @@ export function TeamManagement() {
                   </select>
                 </div>
                 <div className="min-w-[120px]">
-                  <label className="block text-xs text-gray-600 mb-1">{ui.memberRole}</label>
+                  <label className="block text-xs text-gray-500 mb-1">{ui.memberRole}</label>
                   <select
                     value={addRole}
                     onChange={(e) => setAddRole(e.target.value)}
-                    className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+                    className="block w-full rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                   >
                     {MEMBER_ROLES.map((r) => (
                       <option key={r} value={r}>
@@ -200,7 +200,7 @@ export function TeamManagement() {
                 <button
                   type="submit"
                   disabled={!addUserId || addMutation.isPending}
-                  className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded-lg bg-brand-600 py-2 px-4 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm"
                 >
                   {ui.add}
                 </button>
@@ -213,45 +213,47 @@ export function TeamManagement() {
             ) : memberEmails.length === 0 ? (
               <p className="text-gray-500">{ui.noMembersYet}</p>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-md overflow-hidden">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">{ui.email}</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">{ui.memberRole}</th>
-                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {memberEmails.map((m) => (
-                    <tr key={m.id}>
-                      <td className="px-4 py-2 text-sm text-gray-900">{m.email}</td>
-                      <td className="px-4 py-2">
-                        <select
-                          value={m.member_role}
-                          onChange={(e) => updateRoleMutation.mutate({ memberId: m.id, role: e.target.value })}
-                          className="rounded border border-gray-300 py-1 px-2 text-sm"
-                        >
-                          {MEMBER_ROLES.map((r) => (
-                            <option key={r} value={r}>
-                              {teamMemberRoleLabels[r] ?? r}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-4 py-2 text-right">
-                        <button
-                          type="button"
-                          onClick={() => removeMutation.mutate(m.id)}
-                          disabled={removeMutation.isPending}
-                          className="text-sm text-red-600 hover:underline disabled:opacity-50"
-                        >
-                          {ui.removeMember}
-                        </button>
-                      </td>
+              <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50/80">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{ui.email}</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{ui.memberRole}</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {memberEmails.map((m) => (
+                      <tr key={m.id} className="hover:bg-brand-50/40">
+                        <td className="px-4 py-3 text-sm text-gray-900">{m.email}</td>
+                        <td className="px-4 py-3">
+                          <select
+                            value={m.member_role}
+                            onChange={(e) => updateRoleMutation.mutate({ memberId: m.id, role: e.target.value })}
+                            className="rounded-lg border border-gray-300 py-1.5 px-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                          >
+                            {MEMBER_ROLES.map((r) => (
+                              <option key={r} value={r}>
+                                {teamMemberRoleLabels[r] ?? r}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => removeMutation.mutate(m.id)}
+                            disabled={removeMutation.isPending}
+                            className="text-sm text-red-600 hover:text-red-800 font-medium disabled:opacity-50"
+                          >
+                            {ui.removeMember}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </>
         )}

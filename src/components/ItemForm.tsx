@@ -36,12 +36,12 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
   })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-lg">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">{ui.status}</label>
         <select
           {...register('status')}
-          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+          className="block w-full rounded-lg border border-gray-300 py-2.5 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         >
           {ITEM_STATUSES.map((s) => (
             <option key={s} value={s}>
@@ -58,7 +58,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         <textarea
           {...register('status_reason')}
           rows={2}
-          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+          className="block w-full rounded-lg border border-gray-300 py-2.5 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
       <div>
@@ -66,7 +66,7 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         <input
           type="text"
           {...register('next_step')}
-          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+          className="block w-full rounded-lg border border-gray-300 py-2.5 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
       <div>
@@ -74,13 +74,13 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         <input
           type="date"
           {...register('target_date')}
-          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+          className="block w-full rounded-lg border border-gray-300 py-2.5 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
       <button
         type="submit"
         disabled={disabled || isSubmitting}
-        className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        className="rounded-lg bg-brand-600 py-2.5 px-5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm"
       >
         {isSubmitting ? ui.saving : ui.saveUpdate}
       </button>

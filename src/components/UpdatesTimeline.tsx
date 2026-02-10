@@ -7,14 +7,15 @@ export function UpdatesTimeline({ updates }: { updates: ItemUpdateWithAuthor[] }
   }
 
   return (
-    <ul className="space-y-4">
+    <ul className="space-y-3">
       {[...updates].reverse().map((u) => (
-        <li key={u.id} className="border-l-2 border-gray-200 pl-4 py-1">
-          <p className="text-xs text-gray-500">
+        <li key={u.id} className="border-l-2 border-brand-300 pl-4 py-2">
+          <p className="text-xs text-gray-500 mb-1">
+            <span className="font-medium text-brand-600">{u.author_email ?? ''}</span>
+            {u.author_email && ' · '}
             {formatDateTime(u.created_at)}
-            {u.author_email && ` · ${u.author_email}`}
           </p>
-          <pre className="mt-1 text-sm text-gray-700 whitespace-pre-wrap font-sans bg-gray-50 p-2 rounded">
+          <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans bg-white border border-gray-200 p-3 rounded-lg shadow-sm">
             {JSON.stringify(u.snapshot as Record<string, unknown>, null, 2)}
           </pre>
         </li>

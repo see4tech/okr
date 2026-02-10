@@ -46,7 +46,7 @@ export function CommentsPanel({
 
   return (
     <div>
-      <h3 className="font-medium text-gray-900 mb-2">{ui.comments}</h3>
+      <h3 className="font-semibold text-gray-900 mb-3">{ui.comments}</h3>
       {canEdit && (
         <form
           className="mb-4"
@@ -61,12 +61,12 @@ export function CommentsPanel({
             onChange={(e) => setBody(e.target.value)}
             placeholder={ui.addComment}
             rows={2}
-            className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
+            className="block w-full rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
           />
           <button
             type="submit"
             disabled={createMutation.isPending || !body.trim()}
-            className="mt-2 rounded-md bg-blue-600 py-1 px-3 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+            className="mt-2 rounded-lg bg-brand-600 py-1.5 px-4 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm"
           >
             {ui.post}
           </button>
@@ -74,7 +74,7 @@ export function CommentsPanel({
       )}
       <ul className="space-y-2">
         {comments.map((c) => (
-          <li key={c.id} className="rounded border border-gray-200 p-3 bg-gray-50 text-sm">
+          <li key={c.id} className="rounded-lg border border-gray-200 p-3 bg-white text-sm shadow-sm">
             <p className="text-gray-700">{c.body}</p>
             <p className="mt-1 text-xs text-gray-500">
               {c.author_email ?? ui.unknown} · {formatDateTime(c.created_at)}

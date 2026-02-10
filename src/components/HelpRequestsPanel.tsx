@@ -82,15 +82,15 @@ export function HelpRequestsPanel({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-900">{ui.helpRequests}</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-gray-900">{ui.helpRequests}</h3>
         {canEdit && (
           <button
             type="button"
             onClick={() => setShowForm((v) => !v)}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm font-medium text-brand-600 hover:text-brand-800"
           >
-            {showForm ? ui.cancel : ui.addRequest}
+            {showForm ? ui.cancel : `+ ${ui.addRequest}`}
           </button>
         )}
       </div>
@@ -105,11 +105,11 @@ export function HelpRequestsPanel({
         {helpRequests.map((hr) => (
           <li
             key={hr.id}
-            className="rounded border border-gray-200 p-3 bg-gray-50 text-sm"
+            className="rounded-lg border border-gray-200 border-l-4 border-l-brand-400 p-3 bg-white text-sm shadow-sm"
           >
             <div className="flex justify-between items-start">
               <span className="font-medium text-gray-900">{helpRequestTypeLabel(hr.type)}</span>
-              <span className="text-gray-500 text-xs">{helpRequestStatusLabel(hr.status)}</span>
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600">{helpRequestStatusLabel(hr.status)}</span>
             </div>
             {hr.detail && <p className="mt-1 text-gray-600">{hr.detail}</p>}
             {canEdit && (
@@ -188,7 +188,7 @@ function HelpRequestForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
+          className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm"
         >
           {ui.add}
         </button>

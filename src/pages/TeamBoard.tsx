@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
-import { TeamSelector } from '@/components/TeamSelector'
 import { ItemTable } from '@/components/ItemTable'
 import { ui, itemStatusLabel, formatDateTime } from '@/lib/i18n'
 import { ITEM_STATUSES } from '@/types/enums'
@@ -261,85 +260,124 @@ export function TeamBoard() {
     downloadCsv(items, openBlockersCount, openHelpCount)
   }
 
-  const handleTeamSelect = (id: string) => {
-    setSelectedTeamId(id || null)
-    setSearchParams(id ? { team: id } : {})
+  const handleTeamSelect = (teamId: string | null) => {
+    setSelectedTeamId(teamId)
+    setSearchParams(teamId ? { team: teamId } : {})
   }
 
+  // Active filters for pill display
+  const activeFilters: { key: string; label: string; onClear: () => void }[] = []
+  if (statusFilter) activeFilters.push({ key: 'status', label: `${ui.status}: ${itemStatusLabel(statusFilter)}`, onClear: () => setStatusFilter('') })
+  if (objectiveFilter) {
+    const obj = objectives.find((o) => o.id === objectiveFilter)
+    activeFilters.push({ key: 'objective', label: `${ui.objective}: ${obj?.title ?? ''}`, onClear: () => setObjectiveFilter('') })
+  }
+  if (targetFrom) activeFilters.push({ key: 'from', label: `${ui.targetFrom}: ${targetFrom}`, onClear: () => setTargetFrom('') })
+  if (targetTo) activeFilters.push({ key: 'to', label: `${ui.targetTo}: ${targetTo}`, onClear: () => setTargetTo('') })
+
   return (
-    <Layout>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">{ui.teamBoard}</h1>
-        <div className="mb-4 flex flex-wrap gap-4 items-end">
-          <TeamSelector
-            teams={teams}
-            selectedId={selectedTeamId}
-            onSelect={handleTeamSelect}
-          />
+    <Layout
+      showSidebar
+      selectedTeamId={selectedTeamId}
+      onSelectTeam={handleTeamSelect}
+    >
+      <div className="max-w-full">
+        {/* Header row */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.status}</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-md border border-gray-300 py-2 px-3 text-sm"
+            <h1 className="text-2xl font-bold text-gray-900">{ui.teamBoard}</h1>
+            <p className="text-sm text-gray-500 mt-0.5">{items.length} items</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              className="rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-700 hover:bg-gray-50 shadow-sm"
             >
-              <option value="">{ui.all}</option>
-              {ITEM_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {itemStatusLabel(s)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.objective}</label>
-            <select
-              value={objectiveFilter}
-              onChange={(e) => setObjectiveFilter(e.target.value)}
-              className="rounded-md border border-gray-300 py-2 px-3 text-sm"
+              {ui.exportCsv}
+            </button>
+            <a
+              href={selectedTeamId ? `/item/new?team=${selectedTeamId}` : '/item/new'}
+              className="rounded-lg bg-brand-600 py-2 px-4 text-sm font-medium text-white hover:bg-brand-700 shadow-sm"
             >
-              <option value="">{ui.all}</option>
-              {objectives.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.title}
-                </option>
+              + {ui.createItem}
+            </a>
+          </div>
+        </div>
+
+        {/* Filter pills + filter controls */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4">
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="min-w-[140px]">
+              <label className="block text-xs font-medium text-gray-500 mb-1">{ui.status}</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 py-1.5 px-2.5 text-sm bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              >
+                <option value="">{ui.all}</option>
+                {ITEM_STATUSES.map((s) => (
+                  <option key={s} value={s}>{itemStatusLabel(s)}</option>
+                ))}
+              </select>
+            </div>
+            <div className="min-w-[140px]">
+              <label className="block text-xs font-medium text-gray-500 mb-1">{ui.objective}</label>
+              <select
+                value={objectiveFilter}
+                onChange={(e) => setObjectiveFilter(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 py-1.5 px-2.5 text-sm bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              >
+                <option value="">{ui.all}</option>
+                {objectives.map((o) => (
+                  <option key={o.id} value={o.id}>{o.title}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{ui.targetFrom}</label>
+              <input
+                type="date"
+                value={targetFrom}
+                onChange={(e) => setTargetFrom(e.target.value)}
+                className="rounded-lg border border-gray-300 py-1.5 px-2.5 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{ui.targetTo}</label>
+              <input
+                type="date"
+                value={targetTo}
+                onChange={(e) => setTargetTo(e.target.value)}
+                className="rounded-lg border border-gray-300 py-1.5 px-2.5 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+          {/* Active filter pills */}
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-100">
+              {activeFilters.map((f) => (
+                <span
+                  key={f.key}
+                  className="inline-flex items-center gap-1 rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-xs font-medium text-brand-700"
+                >
+                  {f.label}
+                  <button type="button" onClick={f.onClear} className="ml-0.5 hover:text-brand-900" aria-label="Remove filter">
+                    &times;
+                  </button>
+                </span>
               ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.targetFrom}</label>
-            <input
-              type="date"
-              value={targetFrom}
-              onChange={(e) => setTargetFrom(e.target.value)}
-              className="rounded-md border border-gray-300 py-2 px-3 text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{ui.targetTo}</label>
-            <input
-              type="date"
-              value={targetTo}
-              onChange={(e) => setTargetTo(e.target.value)}
-              className="rounded-md border border-gray-300 py-2 px-3 text-sm"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleExportCsv}
-            className="rounded-md border border-gray-300 bg-white py-2 px-3 text-sm text-gray-700 hover:bg-gray-50"
-          >
-            {ui.exportCsv}
-          </button>
+              <button
+                type="button"
+                onClick={() => { setStatusFilter(''); setObjectiveFilter(''); setTargetFrom(''); setTargetTo('') }}
+                className="text-xs text-gray-500 hover:text-gray-700 underline"
+              >
+                Reset
+              </button>
+            </div>
+          )}
         </div>
-        <div className="mb-2 flex justify-end">
-          <a
-            href={selectedTeamId ? `/item/new?team=${selectedTeamId}` : '/item/new'}
-            className="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            {ui.createItem}
-          </a>
-        </div>
+
         {isLoading ? (
           <p className="text-gray-500">{ui.loading}</p>
         ) : (
