@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
@@ -17,11 +17,19 @@ import type { ItemUpdateWithAuthor } from '@/types/db'
 
 type TabId = 'form' | 'blockers' | 'help' | 'comments' | 'timeline' | 'activity'
 
+const TAB_IDS: TabId[] = ['form', 'activity', 'blockers', 'help', 'comments', 'timeline']
+
 export function ItemDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
-  const [tab, setTab] = useState<TabId>('form')
+  const tabFromUrl = searchParams.get('tab') as TabId | null
+  const [tab, setTab] = useState<TabId>(TAB_IDS.includes(tabFromUrl ?? '') ? tabFromUrl! : 'form')
+
+  useEffect(() => {
+    if (tabFromUrl && TAB_IDS.includes(tabFromUrl)) setTab(tabFromUrl)
+  }, [tabFromUrl])
 
   const { data: session } = useQuery({
     queryKey: ['session'],

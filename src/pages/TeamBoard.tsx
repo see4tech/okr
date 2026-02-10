@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
 import { TeamSelector } from '@/components/TeamSelector'
@@ -51,6 +51,38 @@ export function TeamBoard() {
   const [targetTo, setTargetTo] = useState<string>('')
   const [objectiveFilter, setObjectiveFilter] = useState<string>('')
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null)
+  const queryClient = useQueryClient()
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data: { session: s } } = await supabase.auth.getSession()
+      return s
+    },
+  })
+  const userId = session?.user?.id ?? ''
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle()
+      if (error) throw error
+      return data as { role: string } | null
+    },
+    enabled: !!userId,
+  })
+  const isAdmin = profile?.role === 'admin'
+
+  const deleteItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase.from('items').delete().eq('id', itemId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['items', 'board'] })
+      setExpandedItemId(null)
+    },
+  })
 
   const { data: teams = [] } = useQuery({
     queryKey: ['teams'],
@@ -319,6 +351,11 @@ export function TeamBoard() {
             onToggleExpand={(id) => setExpandedItemId((prev) => (prev === id ? null : id))}
             expandedActivity={expandedActivity}
             formatDateTime={formatDateTime}
+            canDeleteItems={isAdmin}
+            onDeleteItem={(id) => {
+              if (window.confirm(ui.deleteItemConfirm)) deleteItemMutation.mutate(id)
+            }}
+            isDeletingItemId={deleteItemMutation.isPending ? deleteItemMutation.variables : null}
           />
         )}
       </div>

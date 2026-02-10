@@ -72,6 +72,7 @@ export const ui = {
   teamAndTitleRequired: 'Equipo y título obligatorios',
   createItemPermissionDenied: 'No tienes permiso para crear ítems en este equipo. Solo miembros y gestores pueden crear ítems; si eres solo espectador, pide que te asignen el rol de miembro.',
   noItem: 'Sin ítem',
+  deleteItemConfirm: '¿Eliminar este ítem? Esta acción no se puede deshacer.',
   exportCsv: 'Exportar CSV',
   csvHeaders: {
     title: 'Título',
