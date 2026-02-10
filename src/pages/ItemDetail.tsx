@@ -159,8 +159,8 @@ export function ItemDetail() {
       const snapshot = {
         status: values.status,
         status_reason: values.status_reason ?? null,
-        blockers_summary: values.blockers_summary ?? null,
-        help_needed_summary: values.help_needed_summary ?? null,
+        blockers_summary: item.blockers_summary ?? null,
+        help_needed_summary: item.help_needed_summary ?? null,
         next_step: values.next_step ?? null,
         target_date: values.target_date || null,
       }
@@ -262,6 +262,7 @@ export function ItemDetail() {
 
         {tab === 'form' && (
           <ItemForm
+            key={`${item.id}-${item.updated_at ?? ''}`}
             item={item}
             onSubmit={(values) => saveUpdateMutation.mutateAsync(values)}
             disabled={!canEdit}

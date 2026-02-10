@@ -8,8 +8,6 @@ import type { Item } from '@/types/db'
 const itemUpdateSchema = z.object({
   status: z.enum(ITEM_STATUSES as unknown as [string, ...string[]]),
   status_reason: z.string().optional(),
-  blockers_summary: z.string().optional(),
-  help_needed_summary: z.string().optional(),
   next_step: z.string().optional(),
   target_date: z.string().optional(),
 })
@@ -32,8 +30,6 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
     defaultValues: {
       status: item.status,
       status_reason: item.status_reason ?? '',
-      blockers_summary: item.blockers_summary ?? '',
-      help_needed_summary: item.help_needed_summary ?? '',
       next_step: item.next_step ?? '',
       target_date: item.target_date ? item.target_date.slice(0, 10) : '',
     },
@@ -61,22 +57,6 @@ export function ItemForm({ item, onSubmit, disabled }: ItemFormProps) {
         <label className="block text-sm font-medium text-gray-700 mb-1">{ui.statusReason}</label>
         <textarea
           {...register('status_reason')}
-          rows={2}
-          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.blockersSummary}</label>
-        <textarea
-          {...register('blockers_summary')}
-          rows={2}
-          className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{ui.helpNeededSummary}</label>
-        <textarea
-          {...register('help_needed_summary')}
           rows={2}
           className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm"
         />
