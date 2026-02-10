@@ -75,7 +75,7 @@ export function Layout({ children, selectedTeamId, onSelectTeam }: LayoutProps) 
             </svg>
           </button>
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt={ui.appName} className="h-8 w-auto" />
+            <img src="/logoblanco.jpg" alt={ui.appName} className="h-8 w-auto rounded" />
           </Link>
         </div>
 
