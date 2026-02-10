@@ -117,7 +117,7 @@ export function TeamManagement() {
 
   if (!isAdmin && profile !== undefined) {
     return (
-      <Layout >
+      <Layout>
         <p className="text-red-600">{ui.accessDeniedAdmin}</p>
         <a href="/" className="mt-2 inline-block text-brand-600 hover:underline">
           {ui.goHome}
@@ -131,7 +131,7 @@ export function TeamManagement() {
   const availableProfiles = profiles.filter((p) => !alreadyMemberIds.has(p.id))
 
   return (
-    <Layout >
+    <Layout>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">{ui.adminTeams}</h1>
 
