@@ -128,7 +128,7 @@ export function Sidebar({ navLinks, selectedTeamId, onSelectTeam, userId, isAdmi
               : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <span className="w-5 h-5 flex items-center justify-center rounded bg-gray-200 text-gray-600 text-xs">
+          <span className="w-6 h-6 shrink-0 flex items-center justify-center rounded bg-gray-200 text-gray-600 text-xs">
             ★
           </span>
           {ui.all}
@@ -144,7 +144,7 @@ export function Sidebar({ navLinks, selectedTeamId, onSelectTeam, userId, isAdmi
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
-            <span className={`w-5 h-5 flex items-center justify-center rounded text-xs font-bold text-white ${
+            <span className={`w-6 h-6 shrink-0 flex items-center justify-center rounded text-xs font-bold text-white ${
               selectedTeamId === team.id ? 'bg-brand-600' : 'bg-gray-400'
             }`}>
               {team.name.charAt(0).toUpperCase()}
