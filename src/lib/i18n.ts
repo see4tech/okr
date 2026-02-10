@@ -114,6 +114,14 @@ export const ui = {
   memberAdded: 'Usuario añadido al equipo.',
   memberRemoved: 'Usuario quitado del equipo.',
   roleUpdated: 'Rol actualizado.',
+  createTeam: 'Crear equipo',
+  editTeam: 'Editar equipo',
+  deleteTeam: 'Eliminar equipo',
+  deleteTeamConfirm: '¿Eliminar este equipo y todos sus datos? Esta acción no se puede deshacer.',
+  teamName: 'Nombre del equipo',
+  teamIcon: 'Icono',
+  tabTeams: 'Equipos',
+  tabMembers: 'Miembros',
 } as const
 
 export const itemStatusLabels: Record<string, string> = {

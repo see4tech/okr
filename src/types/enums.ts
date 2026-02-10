@@ -35,3 +35,9 @@ export type ProfileRole = (typeof PROFILE_ROLES)[number]
 
 export const MEMBER_ROLES = ['manager', 'member', 'viewer'] as const
 export type MemberRole = (typeof MEMBER_ROLES)[number]
+
+export const TEAM_ICONS = [
+  '🏢', '💻', '🖥️', '🏥', '✈️', '⚡', '🔧', '📊',
+  '🎯', '🚀', '📦', '🛡️', '🌐', '📱', '🧪', '🔬',
+  '🏗️', '💡', '📋', '🗂️', '🤝', '🛠️', '📈', '🔑',
+] as const

@@ -11,6 +11,7 @@ export interface Profile {
 export interface Team {
   id: string
   name: string
+  icon: string | null
   created_at: string
   updated_at: string
 }
