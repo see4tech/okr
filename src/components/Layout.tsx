@@ -10,10 +10,9 @@ interface LayoutProps {
   children: React.ReactNode
   selectedTeamId?: string | null
   onSelectTeam?: (teamId: string | null) => void
-  showTeams?: boolean
 }
 
-export function Layout({ children, selectedTeamId, onSelectTeam, showTeams = false }: LayoutProps) {
+export function Layout({ children, selectedTeamId, onSelectTeam }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -118,7 +117,6 @@ export function Layout({ children, selectedTeamId, onSelectTeam, showTeams = fal
           navLinks={navLinks}
           selectedTeamId={selectedTeamId ?? null}
           onSelectTeam={onSelectTeam}
-          showTeams={showTeams}
         />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
