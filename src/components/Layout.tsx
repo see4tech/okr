@@ -74,8 +74,8 @@ export function Layout({ children, selectedTeamId, onSelectTeam }: LayoutProps) 
               <path strokeLinecap="round" strokeLinejoin="round" d={mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
             </svg>
           </button>
-          <Link to="/" className="font-bold text-lg tracking-tight">
-            {ui.appName}
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt={ui.appName} className="h-8 w-auto" />
           </Link>
         </div>
 

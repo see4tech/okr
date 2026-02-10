@@ -87,7 +87,7 @@ export const ui = {
   home: 'Inicio',
   teamBoard: 'Tablero de equipos',
   director: 'Director',
-  appName: 'OKR Ops Tracker',
+  appName: 'Okrit',
   directorDashboard: 'Panel de director',
   itemsWithoutUpdate14: 'Ítems sin actualización (14 días)',
   targetDatesNext30: 'Fechas objetivo (próximos 30 días)',

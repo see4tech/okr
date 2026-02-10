@@ -39,7 +39,7 @@ export function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-tight">{ui.appName}</h1>
+          <img src="/logo.png" alt={ui.appName} className="h-20 w-auto mx-auto mb-3 drop-shadow-lg" />
           <p className="text-brand-300 text-sm mt-1">Sistema de seguimiento de OKRs</p>
         </div>
         <div className="rounded-2xl bg-white p-8 shadow-xl">
