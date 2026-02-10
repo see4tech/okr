@@ -43,9 +43,9 @@ export function Login() {
           <img
             src="/logo.png"
             alt={ui.appName}
-            className="h-56 w-auto mx-auto mb-4 drop-shadow-xl"
+            className="h-56 w-auto mx-auto mb-1 drop-shadow-xl"
           />
-          <p className="text-brand-300 text-sm mt-1">
+          <p className="text-brand-300 text-sm">
             Sistema de seguimiento de OKRs
           </p>
         </div>
