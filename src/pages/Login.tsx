@@ -1,4 +1,4 @@
-// import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { signInWithPassword, signUp } from '@/lib/auth'
 import { ui } from '@/lib/i18n'
@@ -106,7 +106,7 @@ export function Login() {
           <button
             type="button"
             onClick={() => {
-              setIsSignUp((v) => !v)
+              setIsSignUp((v: boolean) => !v)
               setError(null)
             }}
             className="mt-4 w-full text-sm text-brand-600 hover:text-brand-800 font-medium"
