@@ -6,7 +6,6 @@ import { Layout } from '@/components/Layout'
 import { ItemTable } from '@/components/ItemTable'
 import { ui, itemStatusLabel, formatDateTime } from '@/lib/i18n'
 import { ITEM_STATUSES } from '@/types/enums'
-import type { Team } from '@/types/db'
 import type { ItemWithCounts } from '@/types/db'
 
 function downloadCsv(items: ItemWithCounts[], openBlockers: Record<string, number>, openHelp: Record<string, number>) {
@@ -80,15 +79,6 @@ export function TeamBoard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items', 'board'] })
       setExpandedItemId(null)
-    },
-  })
-
-  const { data: teams = [] } = useQuery({
-    queryKey: ['teams'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('teams').select('*').order('name')
-      if (error) throw error
-      return data as Team[]
     },
   })
 
