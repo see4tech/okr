@@ -122,6 +122,9 @@ export const ui = {
   teamIcon: 'Icono',
   tabTeams: 'Equipos',
   tabMembers: 'Miembros',
+  uploadImage: 'Subir imagen',
+  orUploadImage: 'o sube una imagen',
+  changeImage: 'Cambiar',
 } as const
 
 export const itemStatusLabels: Record<string, string> = {

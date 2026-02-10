@@ -1,10 +1,50 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabaseClient'
 import { Layout } from '@/components/Layout'
 import { ui, teamMemberRoleLabels } from '@/lib/i18n'
 import { TEAM_ICONS } from '@/types/enums'
 import type { Team, TeamMember } from '@/types/db'
+
+function isDataUrl(s: string | null | undefined): s is string {
+  return !!s && s.startsWith('data:')
+}
+
+function resizeImageToDataUrl(file: File, size: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')!
+      // Crop to square from center
+      const min = Math.min(img.width, img.height)
+      const sx = (img.width - min) / 2
+      const sy = (img.height - min) / 2
+      ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size)
+      resolve(canvas.toDataURL('image/png'))
+      URL.revokeObjectURL(img.src)
+    }
+    img.onerror = reject
+    img.src = URL.createObjectURL(file)
+  })
+}
+
+function TeamIcon({ icon, name, size = 'sm' }: { icon: string | null; name: string; size?: 'sm' | 'lg' }) {
+  const cls = size === 'lg' ? 'w-10 h-10 text-xl' : 'w-6 h-6 text-base'
+  if (isDataUrl(icon)) {
+    return <img src={icon} alt="" className={`${cls} shrink-0 rounded object-cover`} />
+  }
+  if (icon) {
+    return <span className={`${cls} shrink-0 flex items-center justify-center rounded`}>{icon}</span>
+  }
+  return (
+    <span className={`${cls} shrink-0 flex items-center justify-center rounded bg-gray-400 text-white text-xs font-bold`}>
+      {name.charAt(0).toUpperCase()}
+    </span>
+  )
+}
 
 const MEMBER_ROLES = ['viewer', 'member', 'manager'] as const
 
@@ -146,8 +186,10 @@ function TeamsTab({ teams }: { teams: Team[] }) {
             <tbody className="divide-y divide-gray-100">
               {teams.map((team) => (
                 <tr key={team.id} className="hover:bg-brand-50/40">
-                  <td className="px-4 py-3 text-center text-lg">
-                    {team.icon ?? team.name.charAt(0).toUpperCase()}
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center">
+                      <TeamIcon icon={team.icon} name={team.name} size="lg" />
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">{team.name}</td>
                   <td className="px-4 py-3 text-right">
