@@ -24,11 +24,13 @@ export function ItemDetail() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
-  const tabFromUrl = searchParams.get('tab') as TabId | null
-  const [tab, setTab] = useState<TabId>(TAB_IDS.includes(tabFromUrl ?? '') ? tabFromUrl! : 'form')
+  const tabFromUrl = searchParams.get('tab')
+  const initialTab: TabId =
+    tabFromUrl && TAB_IDS.includes(tabFromUrl as TabId) ? (tabFromUrl as TabId) : 'form'
+  const [tab, setTab] = useState<TabId>(initialTab)
 
   useEffect(() => {
-    if (tabFromUrl && TAB_IDS.includes(tabFromUrl)) setTab(tabFromUrl)
+    if (tabFromUrl && TAB_IDS.includes(tabFromUrl as TabId)) setTab(tabFromUrl as TabId)
   }, [tabFromUrl])
 
   const { data: session } = useQuery({
