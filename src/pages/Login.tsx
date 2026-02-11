@@ -45,8 +45,8 @@ export function Login() {
             alt={ui.appName}
             className="h-56 w-auto mx-auto mb-1 drop-shadow-xl"
           />
-          <p className="text-brand-300 text-sm">
-            Sistema de seguimiento de OKRs
+          <p className="text-brand-500 text-sm">
+            OKRit Insights
           </p>
         </div>
 
